@@ -18,5 +18,4 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "attendee_id", nullable = false)
     private User attendee;
-
 }
