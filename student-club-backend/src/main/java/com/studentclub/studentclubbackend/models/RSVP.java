@@ -3,6 +3,7 @@ package com.studentclub.studentclubbackend.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,5 +23,5 @@ public class RSVP {
     private Event event;
 
     @OneToMany(mappedBy = "rsvp")
-    private Set<Ticket> tickets;
+    private Set<Ticket> tickets = new HashSet<>();
 }

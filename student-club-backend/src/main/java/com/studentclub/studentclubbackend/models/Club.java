@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -35,7 +36,7 @@ public class Club {
         joinColumns = @JoinColumn(name = "club_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    private Set<User> members;
+    private Set<User> members = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -43,5 +44,5 @@ public class Club {
         joinColumns = @JoinColumn(name = "club_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    private Set<User> admins;
+    private Set<User> admins = new HashSet<>();
 }
