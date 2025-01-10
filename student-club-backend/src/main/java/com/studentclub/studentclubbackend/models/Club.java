@@ -39,7 +39,7 @@ public class Club {
 
     @ManyToMany
     @JoinTable(
-        name = "club_members",
+        name = "club_admins",
         joinColumns = @JoinColumn(name = "club_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
