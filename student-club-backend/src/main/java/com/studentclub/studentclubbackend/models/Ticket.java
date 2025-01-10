@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @Table(name = "tickets")
-@EqualsAndHashCode(exclude = {"rsvp", "attendee"})
+@EqualsAndHashCode(exclude = {"rsvp"})
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,12 @@ public class Ticket {
     @JoinColumn(name = "rsvp_id", nullable = false)
     private RSVP rsvp;
 
-    @ManyToOne
-    @JoinColumn(name = "attendee_id", nullable = false)
-    private User attendee;
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 }
