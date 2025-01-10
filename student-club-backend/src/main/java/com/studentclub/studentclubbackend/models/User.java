@@ -18,7 +18,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -28,6 +28,5 @@ public class User {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Roles role = Roles.ROLE_STUDENT;
 }

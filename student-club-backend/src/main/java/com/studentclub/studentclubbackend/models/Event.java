@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Data
@@ -23,12 +23,12 @@ public class Event {
     private Venue venue;
 
     @Column(nullable = false)
-    private long capacity;
+    private int capacity;
 
     @Column(nullable = false)
-    private long numOfAttendees;
+    private int numOfAttendees;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cost;
 
     @Column(nullable = false)
@@ -37,6 +37,6 @@ public class Event {
     @Column(nullable = false, columnDefinition = "text")
     private String description;
 
-    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date date;
 }
