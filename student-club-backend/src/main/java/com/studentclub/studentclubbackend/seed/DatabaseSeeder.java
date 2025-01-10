@@ -5,6 +5,8 @@ import com.studentclub.studentclubbackend.constants.Roles;
 import com.studentclub.studentclubbackend.models.*;
 import com.studentclub.studentclubbackend.repositories.*;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,8 @@ import java.util.*;
 @Component
 @AllArgsConstructor
 public class DatabaseSeeder implements CommandLineRunner {
+
+    private final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
@@ -152,26 +156,28 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         rsvpRepository.saveAll(rsvps);
 
+
         // Create Tickets
         List<Ticket> tickets = new ArrayList<>();
         Object[][] ticketData = {
-                {rsvps.get(0), users.get(0)},
-                {rsvps.get(0), users.get(1)},
-                {rsvps.get(1), users.get(1)},
-                {rsvps.get(1), users.get(4)},
-                {rsvps.get(2), users.get(2)},
-                {rsvps.get(2), users.get(1)},
-                {rsvps.get(3), users.get(3)},
-                {rsvps.get(3), users.get(5)},
-                {rsvps.get(4), users.get(2)},
-                {rsvps.get(4), users.get(4)}
+                {rsvps.get(0), "john.doe@example.com", "John", "Doe"},
+                {rsvps.get(0), "jane.smith@example.com", "Jane", "Smith"},
+                {rsvps.get(1), "jane.smith@example.com", "Jane", "Smith"},
+                {rsvps.get(1), "mary.jane@example.com", "Mary", "Jane"},
+                {rsvps.get(2), "alice.wong@example.com", "Alice", "Wong"},
+                {rsvps.get(2), "jane.smith@example.com", "Jane", "Smith"},
+                {rsvps.get(3), "peter.parker@example.com", "Peter", "Parker"},
+                {rsvps.get(3), "tony.stark@example.com", "Tony", "Stark"},
+                {rsvps.get(4), "alice.wong@example.com", "Alice", "Wong"},
+                {rsvps.get(4), "mary.jane@example.com", "Mary", "Jane"}
         };
         for (Object[] data : ticketData) {
             Ticket ticket = new Ticket();
             ticket.setRsvp((RSVP) data[0]);
-            ticket.setAttendee((User) data[1]);
+            ticket.setEmail((String) data[1]);
+            ticket.setFirstName((String) data[2]);
+            ticket.setLastName((String) data[3]);
             tickets.add(ticket);
-            // Associate ticket with RSVP
             ((RSVP)data[0]).getTickets().add(ticket);
         }
         ticketRepository.saveAll(tickets);
@@ -188,15 +194,13 @@ public class DatabaseSeeder implements CommandLineRunner {
             funding.setClub(clubMap.get(data[0]));
             funding.setDescription((String) data[1]);
             funding.setAmount((BigDecimal) data[2]);
-            // Assuming an enum ApplicationStatus and setting status based on string
-            // You may map strings to enum values accordingly
             funding.setStatus(ApplicationStatus.valueOf(((String)data[3]).toUpperCase()));
             funding.setCreatedAt((Date) data[4]);
             fundings.add(funding);
         }
         fundingRepository.saveAll(fundings);
 
-        System.out.println("Full dummy data seeding completed.");
+        logger.info("\n\nFull dummy data seeding completed.\n");
     }
 
 }
