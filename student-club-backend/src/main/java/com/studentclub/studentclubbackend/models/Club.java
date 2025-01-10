@@ -28,4 +28,20 @@ public class Club {
 
     @OneToOne(mappedBy = "club")
     private FundingApplication funding;
+
+    @ManyToMany
+    @JoinTable(
+        name = "club_members",
+        joinColumns = @JoinColumn(name = "club_id"),
+        inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private Set<User> members;
+
+    @ManyToMany
+    @JoinTable(
+        name = "club_members",
+        joinColumns = @JoinColumn(name = "club_id"),
+        inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private Set<User> admins;
 }
