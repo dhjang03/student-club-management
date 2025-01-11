@@ -24,13 +24,13 @@ public class Club {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal funds;
 
-    @OneToMany(mappedBy = "club")
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY)
     private Set<Event> events;
 
-    @OneToOne(mappedBy = "club")
+    @OneToOne(mappedBy = "club", fetch = FetchType.LAZY)
     private FundingApplication funding;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "club_members",
         joinColumns = @JoinColumn(name = "club_id"),
@@ -38,7 +38,7 @@ public class Club {
     )
     private Set<User> members = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "club_admins",
         joinColumns = @JoinColumn(name = "club_id"),

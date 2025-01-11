@@ -18,7 +18,7 @@ public class Event {
     @JoinColumn(name = "club_id", nullable = false)
     private Club club;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
