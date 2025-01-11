@@ -1,8 +1,11 @@
 package com.studentclub.studentclubbackend.models;
 
+import com.studentclub.studentclubbackend.constants.Roles;
 import jakarta.persistence.*;
 import lombok.Data;
-import com.studentclub.studentclubbackend.constants.Roles;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -27,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private String lastName;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Roles role = Roles.ROLE_STUDENT;
+    @Column(name = "role")
+    private Set<Roles> roles = new HashSet<>();
 }
