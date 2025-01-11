@@ -33,7 +33,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<User> users = new ArrayList<>();
         String commonPassword = "$2a$10$/IdVLa7eV9pcAcbKK74/yeI88wkJoUFO2lsNd2BJqpHfdctiGXkkK"; // password
         String[][] userData = {
-                {"john", "john.doe@example.com", "John", "Doe", "STUDENT_ADMIN"},
+                {"john", "john.doe@example.com", "John", "Doe", "STUDENT"},
                 {"jane", "jane.smith@example.com", "Jane", "Smith", "STUDENT"},
                 {"alice", "alice.wong@example.com", "Alice", "Wong", "STUDENT"},
                 {"peter", "peter.parker@example.com", "Peter", "Parker", "STUDENT"},
@@ -46,8 +46,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 {"wanda", "wanda.maximoff@example.com", "Wanda", "Maximoff", "STUDENT"},
                 {"vision", "vision@example.com", "Vision", "Synthezoid", "STUDENT"},
                 {"scott", "scott.lang@example.com", "Scott", "Lang", "STUDENT"},
-                {"sam", "sam.wilson@example.com", "Sam", "Wilson", "STUDENT"},
-                {"tchalla", "tchalla@example.com", "Tchalla", "Wakanda", "STUDENT"}
+                {"tchalla", "tchalla@example.com", "Tchalla", "Wakanda", "STUDENT"},
+                {"sam", "sam.wilson@example.com", "Sam", "Wilson", "STAFF"}
         };
 
         for (String[] data : userData) {
@@ -57,7 +57,10 @@ public class DatabaseSeeder implements CommandLineRunner {
             user.setEmail(data[1]);
             user.setFirstName(data[2]);
             user.setLastName(data[3]);
-            user.setRole(Roles.valueOf("ROLE_" + data[4]));
+            user.getRoles().add(Roles.valueOf("ROLE_" + data[4]));
+            if (data[0] == "john") {
+                user.getRoles().add(Roles.valueOf("ROLE_STUDENT_ADMIN"));
+            }
             users.add(user);
         }
         userRepository.saveAll(users);
