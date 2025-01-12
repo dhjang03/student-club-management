@@ -5,6 +5,6 @@ import com.studentclub.studentclubbackend.dto.ClubDTO;
 import java.util.List;
 
 public interface ClubService {
-    public List<ClubDTO> findAll();
-    public ClubDTO findById(Long id);
+    List<ClubDTO> findAll();
+    ClubDTO findById(Long id);
 }
