@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface ClubService {
     List<ClubDTO> findAll();
+
     ClubDTO findById(Long id);
 }

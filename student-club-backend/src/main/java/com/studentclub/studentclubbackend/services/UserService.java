@@ -7,6 +7,8 @@ import com.studentclub.studentclubbackend.security.jwt.JwtTokenResponse;
 
 public interface UserService {
     JwtTokenResponse authenticateUser(LoginRequestDTO loginRequest);
+
     void registerUser(RegisterRequestDTO user);
+
     User findByUsername(String name);
 }
