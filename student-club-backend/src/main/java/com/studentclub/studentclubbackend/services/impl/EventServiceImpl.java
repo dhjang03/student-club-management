@@ -37,6 +37,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDTO> searchEventsByKeyword(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return getAllEvents();
+        }
+        
         List<Event> events = eventRepository.findByTitleContainingIgnoreCase(keyword);
         return events.stream()
                 .map(eventMapper::toEventDTO)
