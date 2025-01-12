@@ -2,12 +2,14 @@ package com.studentclub.studentclubbackend.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 
 @Entity
 @Data
 @Table(name = "venues")
+@EqualsAndHashCode(exclude = {"events"})
 public class Venue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +24,6 @@ public class Venue {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "venue")
+    @OneToMany(mappedBy = "venue", fetch = FetchType.LAZY)
     private Set<Event> events;
 }

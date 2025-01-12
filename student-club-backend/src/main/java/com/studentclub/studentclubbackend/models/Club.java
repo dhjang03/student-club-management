@@ -2,6 +2,7 @@ package com.studentclub.studentclubbackend.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "clubs")
+@EqualsAndHashCode(exclude = {"events", "funding", "members", "admins"})
 public class Club {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +26,10 @@ public class Club {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal funds;
 
-    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Event> events;
 
-    @OneToOne(mappedBy = "club", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FundingApplication funding;
 
     @ManyToMany(fetch = FetchType.LAZY)
