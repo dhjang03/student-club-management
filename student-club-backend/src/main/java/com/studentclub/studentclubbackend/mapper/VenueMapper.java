@@ -17,4 +17,15 @@ public class VenueMapper {
         venueDTO.setCapacity(venue.getCapacity());
         return venueDTO;
     }
+
+    public Venue toVenue(VenueDTO venueDTO) {
+        if (venueDTO == null) return null;
+
+        Venue venue = new Venue();
+        venue.setId(venueDTO.getId());
+        venue.setName(venueDTO.getName());
+        venue.setAddress(venueDTO.getAddress());
+        venue.setCapacity(venueDTO.getCapacity());
+        return venue;
+    }
 }

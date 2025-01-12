@@ -20,9 +20,25 @@ public class EventMapper {
         eventDTO.setDescription(event.getDescription());
         eventDTO.setDate(event.getDate());
         eventDTO.setVenue(venueMapper.toVenueDTO(event.getVenue()));
-        eventDTO.setHostedBy(event.getClub().getName()); // Assuming Club has a getName() method
+        eventDTO.setCost(event.getCost());
         eventDTO.setCapacity(event.getCapacity());
         eventDTO.setNumOfAttendees(event.getNumOfAttendees());
         return eventDTO;
+    }
+
+    public Event toEvent(EventDTO eventDTO) {
+        if (eventDTO == null) return null;
+
+        Event event = new Event();
+
+        if (eventDTO.getId() != null) event.setId(eventDTO.getId());
+        event.setTitle(eventDTO.getTitle());
+        event.setDescription(eventDTO.getDescription());
+        event.setDate(eventDTO.getDate());
+        event.setVenue(venueMapper.toVenue(eventDTO.getVenue()));
+        event.setCost(eventDTO.getCost());
+        event.setCapacity(eventDTO.getCapacity());
+        event.setNumOfAttendees(eventDTO.getNumOfAttendees());
+        return event;
     }
 }
