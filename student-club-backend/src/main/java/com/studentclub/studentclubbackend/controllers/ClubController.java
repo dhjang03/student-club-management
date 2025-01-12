@@ -2,7 +2,9 @@ package com.studentclub.studentclubbackend.controllers;
 
 import com.studentclub.studentclubbackend.dto.ClubDTO;
 import com.studentclub.studentclubbackend.services.ClubService;
+import com.studentclub.studentclubbackend.services.EventService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,18 +14,20 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/clubs")
+@RequestMapping("/api/v1/clubs")
 public class ClubController {
+
     private final ClubService clubService;
+    private final EventService eventService;
 
     @GetMapping
-    public List<ClubDTO> getAllClubs() {
+    public ResponseEntity<List<ClubDTO>> getAllClubs() {
         System.out.println("getAllClubs Controller");
-        return clubService.findAll();
+        return ResponseEntity.ok(clubService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ClubDTO getClubById(@PathVariable Long id) {
-        return clubService.findById(id);
+    public ResponseEntity<ClubDTO> getClubById(@PathVariable Long id) {
+        return ResponseEntity.ok(clubService.findById(id));
     }
 }
