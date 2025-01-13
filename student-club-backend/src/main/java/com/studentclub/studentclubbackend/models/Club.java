@@ -47,4 +47,12 @@ public class Club {
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private Set<User> admins = new HashSet<>();
+
+    public void addFunds(BigDecimal amount) {
+        this.funds = funds.add(amount);
+    }
+
+    public void removeFunds(BigDecimal amount) {
+        this.funds = funds.subtract(amount);
+    }
 }
