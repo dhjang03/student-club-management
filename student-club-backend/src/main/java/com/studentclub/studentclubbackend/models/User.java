@@ -3,17 +3,20 @@ package com.studentclub.studentclubbackend.models;
 import com.studentclub.studentclubbackend.constants.Roles;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @EqualsAndHashCode.Include
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -21,7 +24,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
