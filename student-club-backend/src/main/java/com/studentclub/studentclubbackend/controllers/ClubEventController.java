@@ -48,6 +48,7 @@ public class ClubEventController {
 
     @PutMapping("/events")
     public ResponseEntity<EventDTO> updateClubEvent(
+            @PathVariable String clubId,
             @RequestBody EventDTO eventDTO
     ) {
         return ResponseEntity.ok(eventService.updateEvent(eventDTO));
@@ -55,6 +56,7 @@ public class ClubEventController {
 
     @DeleteMapping("/events/{eventId}")
     public ResponseEntity<Void> deleteClubEvent(
+            @PathVariable Long clubId,
             @PathVariable Long eventId
     ) {
         eventService.deleteEvent(eventId);
