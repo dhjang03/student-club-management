@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,14 @@ public class EventServiceImpl implements EventService {
         Club club = clubRepository.findById(clubId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found")
         );
+
+        if (club.getFunds().compareTo(eventDTO.getCost()) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds to create event");
+        }
+
+        club.removeFunds(eventDTO.getCost());
         event.setClub(club);
+
         Event newEvent = eventRepository.save(event);
         return eventMapper.toEventDTO(newEvent);
     }
@@ -82,10 +90,18 @@ public class EventServiceImpl implements EventService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue not found")
         );
 
+        Club club = existingEvent.getClub();
+        BigDecimal delta = eventDTO.getCost().subtract(existingEvent.getCost());
+
+        if (delta.compareTo(BigDecimal.ZERO) > 0) {
+            club.addFunds(delta);
+        } else if (delta.compareTo(BigDecimal.ZERO) < 0) {
+            club.removeFunds(delta.abs());
+        }
+
         existingEvent.setTitle(eventDTO.getTitle());
         existingEvent.setDescription(eventDTO.getDescription());
         existingEvent.setDate(eventDTO.getDate());
-        existingEvent.setCost(eventDTO.getCost());
         existingEvent.setCapacity(eventDTO.getCapacity());
         existingEvent.setVenue(venue);
 
