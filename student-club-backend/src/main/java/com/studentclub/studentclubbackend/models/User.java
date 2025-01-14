@@ -16,7 +16,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long id;
+    private long id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -38,4 +38,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Set<Roles> roles = new HashSet<>();
+
+    @Version
+    private long version;
 }

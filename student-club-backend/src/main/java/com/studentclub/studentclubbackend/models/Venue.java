@@ -26,4 +26,7 @@ public class Venue {
 
     @OneToMany(mappedBy = "venue", fetch = FetchType.LAZY)
     private Set<Event> events;
+
+    @Version
+    private long version;
 }

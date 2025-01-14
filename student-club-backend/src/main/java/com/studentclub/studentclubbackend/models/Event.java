@@ -47,6 +47,12 @@ public class Event {
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Rsvp> rsvps = new HashSet<>();
 
+    @Version
+    private long version;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
     public boolean updateAttendees(int amount) {
         if (numOfAttendees + amount > capacity) {
             return false;

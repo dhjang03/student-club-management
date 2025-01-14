@@ -48,6 +48,9 @@ public class Club {
     )
     private Set<User> admins = new HashSet<>();
 
+    @Version
+    private long version;
+
     public void addFunds(BigDecimal amount) {
         this.funds = funds.add(amount);
     }

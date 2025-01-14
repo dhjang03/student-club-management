@@ -32,4 +32,7 @@ public class FundingApplication {
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status = ApplicationStatus.DRAFT;
+
+    @Version
+    private long version;
 }

@@ -12,8 +12,10 @@ import com.studentclub.studentclubbackend.services.RsvpService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,12 +46,13 @@ public class RsvpServiceImpl implements RsvpService {
     }
 
     @Override
+    @Transactional
     public RsvpDTO createRsvp(Long userId, Long eventId, RsvpDTO rsvpDTO) {
         Rsvp rsvp = rsvpMapper.toRsvp(rsvpDTO);
         User responder = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         );
-        Event event = eventRepository.findById(eventId).orElseThrow(
+        Event event = eventRepository.findEventForUpdate(eventId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
         );
 
@@ -61,6 +64,7 @@ public class RsvpServiceImpl implements RsvpService {
 
         rsvp.setResponder(responder);
         rsvp.setEvent(event);
+        rsvp.setCreatedAt(new Date());
 
         Rsvp newRsvp = rsvpRepository.save(rsvp);
         return rsvpMapper.toRsvpDTO(newRsvp);
