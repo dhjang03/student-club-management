@@ -4,6 +4,7 @@ import com.studentclub.studentclubbackend.dto.EventDTO;
 import com.studentclub.studentclubbackend.services.EventService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -18,6 +19,7 @@ public class ClubEventController {
     private EventService eventService;
 
     @GetMapping("/events")
+    @PreAuthorize("@membershipSecurityService.isMember(#clubId, authentication)")
     public ResponseEntity<List<EventDTO>> getClubEvents(
             @PathVariable Long clubId
     ) {
@@ -25,6 +27,7 @@ public class ClubEventController {
     }
 
     @GetMapping("/events/{eventId}")
+    @PreAuthorize("@membershipSecurityService.isMember(#clubId, authentication)")
     public ResponseEntity<EventDTO> getClubEventById(
             @PathVariable Long clubId,
             @PathVariable Long eventId
@@ -33,6 +36,7 @@ public class ClubEventController {
     }
 
     @PostMapping("/events")
+    @PreAuthorize("@membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<EventDTO> createClubEvent(
             @PathVariable Long clubId,
             @RequestBody EventDTO eventDTO
@@ -47,6 +51,7 @@ public class ClubEventController {
     }
 
     @PutMapping("/events")
+    @PreAuthorize("@membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<EventDTO> updateClubEvent(
             @PathVariable String clubId,
             @RequestBody EventDTO eventDTO
@@ -55,6 +60,7 @@ public class ClubEventController {
     }
 
     @DeleteMapping("/events/{eventId}")
+    @PreAuthorize("@membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<Void> deleteClubEvent(
             @PathVariable Long clubId,
             @PathVariable Long eventId

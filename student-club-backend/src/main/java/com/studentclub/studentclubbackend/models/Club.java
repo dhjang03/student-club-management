@@ -11,11 +11,11 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "clubs")
-@EqualsAndHashCode(exclude = {"events", "funding", "members", "admins"})
+@EqualsAndHashCode(exclude = {"events", "funding", "memberships"})
 public class Club {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -32,24 +32,11 @@ public class Club {
     @OneToOne(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private FundingApplication funding;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "club_members",
-        joinColumns = @JoinColumn(name = "club_id"),
-        inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<User> members = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "club_admins",
-        joinColumns = @JoinColumn(name = "club_id"),
-        inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<User> admins = new HashSet<>();
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ClubMembership> memberships = new HashSet<>();
 
     @Version
-    private long version;
+    private Long version;
 
     public void addFunds(BigDecimal amount) {
         this.funds = funds.add(amount);

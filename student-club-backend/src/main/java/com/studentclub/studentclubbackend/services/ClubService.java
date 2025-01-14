@@ -1,7 +1,7 @@
 package com.studentclub.studentclubbackend.services;
 
 import com.studentclub.studentclubbackend.dto.ClubDTO;
-import com.studentclub.studentclubbackend.dto.UserDTO;
+import com.studentclub.studentclubbackend.dto.ClubMemberDTO;
 
 import java.util.List;
 
@@ -10,9 +10,5 @@ public interface ClubService {
 
     ClubDTO findById(Long id);
 
-    List<UserDTO> findAllMembers(Long clubId);
-
-    void promoteMember(Long clubId, UserDTO userDTO);
-
-    void demoteAdmin(Long clubId, UserDTO userDTO);
+    List<ClubMemberDTO> findAllMembers(Long clubId);
 }

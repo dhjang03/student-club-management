@@ -4,6 +4,7 @@ import com.studentclub.studentclubbackend.dto.FundingDTO;
 import com.studentclub.studentclubbackend.services.FundingApplicationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,6 +18,7 @@ public class ClubFundingController {
     private FundingApplicationService fundingService;
 
     @GetMapping
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<FundingDTO> getClubFunding(
             @PathVariable Long clubId
     ) {
@@ -24,6 +26,7 @@ public class ClubFundingController {
     }
 
     @GetMapping("/{fundingId}")
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<FundingDTO> getClubFundingByFundingId(
             @PathVariable Long clubId,
             @PathVariable Long fundingId
@@ -32,6 +35,7 @@ public class ClubFundingController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<FundingDTO> createFunding(
             @PathVariable Long clubId,
             @RequestBody FundingDTO fundingDTO
@@ -46,6 +50,7 @@ public class ClubFundingController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<FundingDTO> updateFunding(
             @PathVariable Long clubId,
             @RequestBody FundingDTO fundingDTO
@@ -54,6 +59,7 @@ public class ClubFundingController {
     }
 
     @DeleteMapping("/{fundingId}")
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
     public ResponseEntity<Void> deleteFunding(
             @PathVariable Long clubId,
             @PathVariable Long fundingId
