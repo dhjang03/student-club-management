@@ -2,6 +2,7 @@ package com.studentclub.studentclubbackend.dto;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -10,4 +11,5 @@ public class RsvpDTO {
     private UserDTO responder;
     private EventDTO event;
     private List<TicketDTO> tickets;
+    private Date createdAt;
 }

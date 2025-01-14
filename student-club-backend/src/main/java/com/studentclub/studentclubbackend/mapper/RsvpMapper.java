@@ -33,6 +33,7 @@ public class RsvpMapper {
         rsvpDTO.setTickets(ticketDTOs);
 
         rsvpDTO.setEvent(eventMapper.toEventDTO(rsvp.getEvent()));
+        rsvpDTO.setCreatedAt(rsvp.getCreatedAt());
 
         return rsvpDTO;
     }

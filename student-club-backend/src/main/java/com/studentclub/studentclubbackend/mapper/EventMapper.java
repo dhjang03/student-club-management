@@ -23,6 +23,7 @@ public class EventMapper {
         eventDTO.setCost(event.getCost());
         eventDTO.setCapacity(event.getCapacity());
         eventDTO.setNumOfAttendees(event.getNumOfAttendees());
+        eventDTO.setCreatedAt(event.getCreatedAt());
         return eventDTO;
     }
 

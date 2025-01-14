@@ -13,6 +13,7 @@ public class EventDTO {
     private Date date;
     private VenueDTO venue;
     private BigDecimal cost;
+    private Date createdAt;
     private int capacity;
     private int numOfAttendees;
 }
