@@ -29,6 +29,8 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        Date currentDate = new Date();
+
         // Create Dummy Users
         List<User> users = new ArrayList<>();
         String commonPassword = "$2a$10$/IdVLa7eV9pcAcbKK74/yeI88wkJoUFO2lsNd2BJqpHfdctiGXkkK"; // password
@@ -138,6 +140,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             event.setDate(new Date());
             event.setCost((BigDecimal) data[6]);
             event.setNumOfAttendees((Integer) data[7]);
+            event.setCreatedAt(currentDate);
             events.add(event);
         }
         eventRepository.saveAll(events);
@@ -155,6 +158,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             Rsvp rsvp = new Rsvp();
             rsvp.setResponder((User) data[0]);
             rsvp.setEvent((Event) data[1]);
+            rsvp.setCreatedAt(currentDate);
             rsvps.add(rsvp);
         }
         rsvpRepository.saveAll(rsvps);
@@ -189,8 +193,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         // Create FundingApplications
         List<FundingApplication> fundings = new ArrayList<>();
         Object[][] fundingData = {
-                {"Art Club", "Art Gallery Exhibition Support", new BigDecimal("500.00"), "DRAFT", new Date()},
-                {"Music Club", "Music Club Exhibition Support", new BigDecimal("1000.00"), "SUBMITTED", new Date()}
+                {"Art Club", "Art Gallery Exhibition Support", new BigDecimal("500.00"), "DRAFT"},
+                {"Music Club", "Music Club Exhibition Support", new BigDecimal("1000.00"), "SUBMITTED"}
         };
         for (Object[] data : fundingData) {
             FundingApplication funding = new FundingApplication();
@@ -198,7 +202,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             funding.setDescription((String) data[1]);
             funding.setAmount((BigDecimal) data[2]);
             funding.setStatus(ApplicationStatus.valueOf(((String)data[3]).toUpperCase()));
-            funding.setCreatedAt((Date) data[4]);
+            funding.setCreatedAt(currentDate);
             fundings.add(funding);
         }
         fundingRepository.saveAll(fundings);
