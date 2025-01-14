@@ -14,6 +14,6 @@ public class EventDTO {
     private VenueDTO venue;
     private BigDecimal cost;
     private Date createdAt;
-    private int capacity;
-    private int numOfAttendees;
+    private Integer capacity;
+    private Integer numOfAttendees;
 }

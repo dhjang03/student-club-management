@@ -1,6 +1,6 @@
 package com.studentclub.studentclubbackend.dto;
 
-import com.studentclub.studentclubbackend.constants.Roles;
+import com.studentclub.studentclubbackend.constants.UserRole;
 import lombok.Data;
 
 import java.util.Set;
@@ -11,5 +11,5 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private Set<Roles> roles;
+    private Set<UserRole> roles;
 }
