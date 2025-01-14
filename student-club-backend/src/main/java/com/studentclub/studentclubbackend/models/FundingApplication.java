@@ -15,7 +15,7 @@ import java.util.Date;
 public class FundingApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id", nullable = false, unique = true)
@@ -34,5 +34,5 @@ public class FundingApplication {
     private ApplicationStatus status = ApplicationStatus.DRAFT;
 
     @Version
-    private long version;
+    private Long version;
 }
