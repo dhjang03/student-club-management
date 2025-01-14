@@ -1,6 +1,6 @@
 package com.studentclub.studentclubbackend.models;
 
-import com.studentclub.studentclubbackend.constants.Roles;
+import com.studentclub.studentclubbackend.constants.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -37,8 +37,8 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Set<Roles> roles = new HashSet<>();
+    private Set<UserRole> roles = new HashSet<>();
 
     @Version
-    private long version;
+    private Long version;
 }

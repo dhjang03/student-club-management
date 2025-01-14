@@ -13,10 +13,10 @@ import java.util.Set;
 public class Venue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
-    private int capacity;
+    private Integer capacity;
 
     @Column(nullable = false)
     private String name;
@@ -28,5 +28,5 @@ public class Venue {
     private Set<Event> events;
 
     @Version
-    private long version;
+    private Long version;
 }

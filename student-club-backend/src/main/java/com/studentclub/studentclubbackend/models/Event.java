@@ -16,7 +16,7 @@ import java.util.Set;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -36,10 +36,10 @@ public class Event {
     private Venue venue;
 
     @Column(nullable = false)
-    private int capacity;
+    private Integer capacity;
 
     @Column(nullable = false)
-    private int numOfAttendees;
+    private Integer numOfAttendees;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cost;
@@ -48,7 +48,7 @@ public class Event {
     private Set<Rsvp> rsvps = new HashSet<>();
 
     @Version
-    private long version;
+    private Long version;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

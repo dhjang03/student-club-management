@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.Set;
 public class Rsvp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responder_id", nullable = false)
@@ -30,9 +31,9 @@ public class Rsvp {
     private Date createdAt;
 
     @Version
-    private long version;
+    private Long version;
 
     public boolean isOwnedBy(Long userId) {
-        return responder.getId() == userId;
+        return Objects.equals(responder.getId(), userId);
     }
 }
