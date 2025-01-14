@@ -105,7 +105,7 @@ public class ClubServiceImpl implements ClubService {
 
     private User getUserInSet(Set<User> users, Long userId) {
         return users.stream()
-                .filter(user -> user.getId().equals(userId))
+                .filter(user -> user.getId() == userId)
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not Member of the Club."));
     }
