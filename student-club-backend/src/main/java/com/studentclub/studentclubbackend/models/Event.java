@@ -45,5 +45,13 @@ public class Event {
     private BigDecimal cost;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RSVP> rsvps = new HashSet<>();
+    private Set<Rsvp> rsvps = new HashSet<>();
+
+    public boolean updateAttendees(int amount) {
+        if (numOfAttendees + amount > capacity) {
+            return false;
+        }
+        numOfAttendees += amount;
+        return true;
+    }
 }

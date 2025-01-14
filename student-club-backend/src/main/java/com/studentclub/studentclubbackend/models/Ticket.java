@@ -15,7 +15,7 @@ public class Ticket {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rsvp_id", nullable = false)
-    private RSVP rsvp;
+    private Rsvp rsvp;
 
     @Column(nullable = false)
     private String email;

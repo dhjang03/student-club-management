@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "rsvps")
-public class RSVP {
+public class Rsvp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -24,4 +24,8 @@ public class RSVP {
 
     @OneToMany(mappedBy = "rsvp", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ticket> tickets = new HashSet<>();
+
+    public boolean isOwnedBy(Long userId) {
+        return responder.getId().equals(userId);
+    }
 }

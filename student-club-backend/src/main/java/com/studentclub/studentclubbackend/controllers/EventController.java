@@ -1,9 +1,13 @@
 package com.studentclub.studentclubbackend.controllers;
 
 import com.studentclub.studentclubbackend.dto.EventDTO;
+import com.studentclub.studentclubbackend.dto.RsvpDTO;
+import com.studentclub.studentclubbackend.security.CustomUserDetails;
 import com.studentclub.studentclubbackend.services.EventService;
+import com.studentclub.studentclubbackend.services.RsvpService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,17 +18,18 @@ import java.util.List;
 public class EventController {
 
     private EventService eventService;
+    private RsvpService rsvpService;
 
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{eventId}")
     public ResponseEntity<EventDTO> getEventById(
-            @PathVariable Long id
+            @PathVariable Long eventId
     ) {
-        return ResponseEntity.ok(eventService.getEventById(id));
+        return ResponseEntity.ok(eventService.getEventById(eventId));
     }
 
     @GetMapping("/search")
@@ -32,5 +37,17 @@ public class EventController {
         @RequestParam String keyword
     ) {
         return ResponseEntity.ok(eventService.searchEventsByKeyword(keyword));
+    }
+
+    @PostMapping("/{eventId}/rsvp")
+    public ResponseEntity<RsvpDTO> createRsvp(
+            Authentication authentication,
+            @PathVariable Long eventId,
+            @RequestBody RsvpDTO rsvpDTO
+    ) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.getId();
+
+        return ResponseEntity.ok(rsvpService.createRsvp(userId, eventId, rsvpDTO));
     }
 }
