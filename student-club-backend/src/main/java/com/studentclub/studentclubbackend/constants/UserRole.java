@@ -1,7 +1,6 @@
 package com.studentclub.studentclubbackend.constants;
 
-public enum Roles {
+public enum UserRole {
     ROLE_STUDENT,
-    ROLE_STUDENT_ADMIN,
     ROLE_STAFF
 }
