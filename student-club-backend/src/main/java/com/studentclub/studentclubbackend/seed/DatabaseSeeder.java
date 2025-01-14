@@ -143,7 +143,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         eventRepository.saveAll(events);
 
         // Create RSVPs
-        List<RSVP> rsvps = new ArrayList<>();
+        List<Rsvp> rsvps = new ArrayList<>();
         Object[][] rsvpData = {
                 {users.get(0), events.get(0)},
                 {users.get(0), events.get(1)},
@@ -152,7 +152,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 {users.get(3), events.get(5)}
         };
         for (Object[] data : rsvpData) {
-            RSVP rsvp = new RSVP();
+            Rsvp rsvp = new Rsvp();
             rsvp.setResponder((User) data[0]);
             rsvp.setEvent((Event) data[1]);
             rsvps.add(rsvp);
@@ -176,12 +176,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         };
         for (Object[] data : ticketData) {
             Ticket ticket = new Ticket();
-            ticket.setRsvp((RSVP) data[0]);
+            ticket.setRsvp((Rsvp) data[0]);
             ticket.setEmail((String) data[1]);
             ticket.setFirstName((String) data[2]);
             ticket.setLastName((String) data[3]);
             tickets.add(ticket);
-            ((RSVP)data[0]).getTickets().add(ticket);
+            ((Rsvp)data[0]).getTickets().add(ticket);
         }
         ticketRepository.saveAll(tickets);
         rsvpRepository.saveAll(rsvps);
