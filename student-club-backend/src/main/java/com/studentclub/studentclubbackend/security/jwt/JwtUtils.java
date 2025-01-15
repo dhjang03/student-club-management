@@ -34,6 +34,10 @@ public class JwtUtils {
         return getAllClaims(token).getSubject();
     }
 
+    public Long getUserIdFromJwtToken(String token) {
+        return Long.valueOf(getAllClaims(token).getId());
+    }
+
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")){
