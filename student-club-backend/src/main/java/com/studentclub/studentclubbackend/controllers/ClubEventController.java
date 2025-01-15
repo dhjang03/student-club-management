@@ -47,7 +47,7 @@ public class ClubEventController {
                 .path("/{id}")
                 .buildAndExpand(newEvent.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(eventDTO);
+        return ResponseEntity.created(location).body(newEvent);
     }
 
     @PutMapping("/events")
