@@ -65,10 +65,9 @@ public class EventServiceImpl implements EventService {
         Venue venue = validateVenueAvailability(eventDTO);
         Club club = validateClubFunds(clubId, eventDTO);
         Event event = buildEvent(eventDTO, club, venue);
+        Event savedEvent = eventRepository.save(event);
 
-        return eventMapper.toEventDTO(
-                eventRepository.save(event)
-        );
+        return eventMapper.toEventDTO(savedEvent);
     }
 
     @Override
@@ -80,9 +79,8 @@ public class EventServiceImpl implements EventService {
         updateClubFunds(club, existingEvent.getCost(), eventDTO.getCost());
         updateEventDetails(existingEvent, eventDTO, venue);
 
-        return eventMapper.toEventDTO(
-                eventRepository.save(existingEvent)
-        );
+        Event updatedEvent = eventRepository.save(existingEvent);
+        return eventMapper.toEventDTO(updatedEvent);
     }
 
     @Override
