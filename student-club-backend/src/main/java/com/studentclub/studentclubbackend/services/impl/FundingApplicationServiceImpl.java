@@ -19,59 +19,46 @@ import java.util.Date;
 @AllArgsConstructor
 public class FundingApplicationServiceImpl implements FundingApplicationService {
 
-    private FundingApplicationRepository fundingRepository;
-    private ClubRepository clubRepository;
-
-    private FundingMapper fundingMapper;
+    private final FundingApplicationRepository fundingRepository;
+    private final ClubRepository clubRepository;
+    private final FundingMapper fundingMapper;
 
     @Override
     public FundingDTO getFundingByClubId(Long clubId) {
-        FundingApplication funding = fundingRepository.findByClubId(clubId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+        FundingApplication funding = findFundingByClubIdOrThrow(clubId);
         return fundingMapper.toFundingDTO(funding);
     }
 
     @Override
     public FundingDTO getFundingByFundingId(Long fundingId) {
-        FundingApplication funding = fundingRepository.findById(fundingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+        FundingApplication funding = findFundingByIdOrThrow(fundingId);
         return fundingMapper.toFundingDTO(funding);
     }
 
     @Override
     public FundingDTO createFunding(Long clubId, FundingDTO fundingDTO) {
-        FundingApplication funding = fundingMapper.toFundingApplication(fundingDTO);
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club Not Found."));
-
         if (fundingRepository.existsByClubId(clubId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Funding Application Already Exists");
         }
 
-        funding.setClub(club);
-        funding.setCreatedAt(new Date());
-        FundingApplication newFunding = fundingRepository.save(funding);
-        return fundingMapper.toFundingDTO(newFunding);
+        Club club = findClubByIdOrThrow(clubId);
+        FundingApplication funding = buildFundingApplication(fundingDTO, club);
+        FundingApplication savedFunding = fundingRepository.save(funding);
+
+        return fundingMapper.toFundingDTO(savedFunding);
     }
 
     @Override
     public FundingDTO updateFunding(FundingDTO fundingDTO) {
-        FundingApplication existingFunding = fundingRepository.findById(fundingDTO.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+        FundingApplication existingFunding = findFundingByIdOrThrow(fundingDTO.getId());
 
-        if (existingFunding.getStatus() == ApplicationStatus.APPROVED
-                || existingFunding.getStatus() == ApplicationStatus.REJECTED) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Funding Application Already Approved/Rejected");
-        }
+        validateFundingStatus(existingFunding);
 
-        Club club = existingFunding.getClub();
+        updateFundingDetails(existingFunding, fundingDTO);
+
         if (fundingDTO.getStatus() == ApplicationStatus.APPROVED) {
-            club.addFunds(fundingDTO.getAmount());
+            existingFunding.getClub().addFunds(fundingDTO.getAmount());
         }
-
-        existingFunding.setDescription(fundingDTO.getDescription());
-        existingFunding.setAmount(fundingDTO.getAmount());
-        existingFunding.setStatus(fundingDTO.getStatus());
 
         FundingApplication updatedFunding = fundingRepository.save(existingFunding);
         return fundingMapper.toFundingDTO(updatedFunding);
@@ -79,8 +66,42 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
 
     @Override
     public void deleteFunding(Long fundingId) {
-        FundingApplication funding = fundingRepository.findById(fundingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+        FundingApplication funding = findFundingByIdOrThrow(fundingId);
         fundingRepository.delete(funding);
+    }
+
+    private FundingApplication findFundingByIdOrThrow(Long fundingId) {
+        return fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+    }
+
+    private FundingApplication findFundingByClubIdOrThrow(Long clubId) {
+        return fundingRepository.findByClubId(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
+    }
+
+    private Club findClubByIdOrThrow(Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club Not Found."));
+    }
+
+    private FundingApplication buildFundingApplication(FundingDTO fundingDTO, Club club) {
+        FundingApplication funding = fundingMapper.toFundingApplication(fundingDTO);
+        funding.setClub(club);
+        funding.setCreatedAt(new Date());
+        return funding;
+    }
+
+    private void validateFundingStatus(FundingApplication funding) {
+        if (funding.getStatus() == ApplicationStatus.APPROVED || funding.getStatus() == ApplicationStatus.REJECTED) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+                    "Funding Application Already Approved/Rejected");
+        }
+    }
+
+    private void updateFundingDetails(FundingApplication funding, FundingDTO fundingDTO) {
+        funding.setDescription(fundingDTO.getDescription());
+        funding.setAmount(fundingDTO.getAmount());
+        funding.setStatus(fundingDTO.getStatus());
     }
 }

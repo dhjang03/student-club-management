@@ -21,16 +21,14 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
-    private AuthenticationManager authenticationManager;
-    private JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     @Override
     public JwtTokenResponse authenticateUser(LoginRequestDTO loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authentication = authenticate(loginRequest.getUsername(), loginRequest.getPassword());
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String jwt = jwtUtils.generateToken(userDetails);
         return new JwtTokenResponse(jwt);
@@ -38,6 +36,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerUser(RegisterRequestDTO registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+            throw new IllegalArgumentException("Username is already taken: " + registerRequest.getUsername());
+        }
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email is already registered: " + registerRequest.getEmail());
+        }
+        User user = buildUserFromRegisterRequest(registerRequest);
+        userRepository.save(user);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User not found with username: %s", username)));
+    }
+
+    private Authentication authenticate(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    private User buildUserFromRegisterRequest(RegisterRequestDTO registerRequest) {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -45,11 +67,6 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(registerRequest.getFirstName());
         user.setLastName(registerRequest.getLastName());
         user.setRoles(registerRequest.getRoles());
-        userRepository.save(user);
-    }
-
-    public User findByUsername(String name) {
-        return userRepository.findByUsername(name)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + name));
+        return user;
     }
 }

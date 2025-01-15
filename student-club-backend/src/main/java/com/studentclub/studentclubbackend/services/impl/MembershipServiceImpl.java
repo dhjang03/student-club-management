@@ -20,51 +20,37 @@ import java.util.List;
 @AllArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
-    private ClubMembershipRepository membershipRepository;
-    private ClubRepository clubRepository;
-    private UserRepository userRepository;
+    private final ClubMembershipRepository membershipRepository;
+    private final ClubRepository clubRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ClubMembership addMembership(Long clubId, Long userId, MembershipRole role) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Club club = findClubByIdOrThrow(clubId);
+        User user = findUserByIdOrThrow(userId);
 
-        if (membershipRepository.findByClubIdAndUserId(clubId, userId).isPresent()) {
+        if (isMember(clubId, userId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User is already a member/admin of this club");
         }
 
-        ClubMembership membership = new ClubMembership();
-        ClubMembershipId membershipId = new ClubMembershipId(club.getId(), user.getId());
-        membership.setId(membershipId);
-        membership.setClub(club);
-        membership.setUser(user);
-        membership.setMembershipRole(role);
+        ClubMembership membership = buildMembership(club, user, role);
         return membershipRepository.save(membership);
     }
 
     @Override
     public void removeMembership(Long clubId, Long userId) {
-        ClubMembership membership = membershipRepository.findByClubIdAndUserId(clubId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership not found"));
+        ClubMembership membership = findMembershipOrThrow(clubId, userId);
         membershipRepository.delete(membership);
     }
 
     @Override
     public void promoteMember(Long clubId, Long userId) {
-        ClubMembership membership = membershipRepository.findByClubIdAndUserId(clubId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership not found"));
-        membership.setMembershipRole(MembershipRole.ADMIN);
-        membershipRepository.save(membership);
+        updateMembershipRole(clubId, userId, MembershipRole.ADMIN);
     }
 
     @Override
     public void demoteAdmin(Long clubId, Long userId) {
-        ClubMembership membership = membershipRepository.findByClubIdAndUserId(clubId, userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership not found"));
-        membership.setMembershipRole(MembershipRole.MEMBER);
-        membershipRepository.save(membership);
+        updateMembershipRole(clubId, userId, MembershipRole.MEMBER);
     }
 
     @Override
@@ -75,7 +61,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public boolean isAdmin(Long clubId, Long userId) {
         return membershipRepository.findByClubIdAndUserId(clubId, userId)
-                .map(m -> m.getMembershipRole() == MembershipRole.ADMIN)
+                .map(membership -> membership.getMembershipRole() == MembershipRole.ADMIN)
                 .orElse(false);
     }
 
@@ -87,5 +73,35 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public List<ClubMembership> getAllMembershipsForUser(Long userId) {
         return membershipRepository.findByUserId(userId);
+    }
+
+    private Club findClubByIdOrThrow(Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found"));
+    }
+
+    private User findUserByIdOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    private ClubMembership findMembershipOrThrow(Long clubId, Long userId) {
+        return membershipRepository.findByClubIdAndUserId(clubId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membership not found"));
+    }
+
+    private ClubMembership buildMembership(Club club, User user, MembershipRole role) {
+        ClubMembership membership = new ClubMembership();
+        membership.setId(new ClubMembershipId(club.getId(), user.getId()));
+        membership.setClub(club);
+        membership.setUser(user);
+        membership.setMembershipRole(role);
+        return membership;
+    }
+
+    private void updateMembershipRole(Long clubId, Long userId, MembershipRole newRole) {
+        ClubMembership membership = findMembershipOrThrow(clubId, userId);
+        membership.setMembershipRole(newRole);
+        membershipRepository.save(membership);
     }
 }

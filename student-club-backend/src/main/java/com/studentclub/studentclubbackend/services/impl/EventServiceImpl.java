@@ -91,7 +91,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.delete(event);
     }
 
-    // Utility and Validation Methods
     private Venue validateVenueAvailability(EventDTO eventDTO) {
         Venue venue = findVenueByIdOrThrow(eventDTO.getVenue().getId());
 
