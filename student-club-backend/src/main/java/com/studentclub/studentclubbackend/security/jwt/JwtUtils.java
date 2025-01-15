@@ -6,8 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +17,10 @@ import java.security.Key;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class JwtUtils {
 
-    private final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private final String ISSUER = "studentclubbackend";
     private final String CLAIM_ROLES = "roles";
 
@@ -68,10 +67,10 @@ public class JwtUtils {
                     .parseSignedClaims(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            logger.debug("Failed to Validate Token: " + e.getMessage());
+            log.debug("Failed to Validate Token: " + e.getMessage());
             throw new RuntimeException(e);
         } catch (Exception e) {
-            logger.debug("Unexpected Error Occurred: " + e.getMessage());
+            log.debug("Unexpected Error Occurred: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

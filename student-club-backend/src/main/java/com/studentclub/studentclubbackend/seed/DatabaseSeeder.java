@@ -1,24 +1,27 @@
 package com.studentclub.studentclubbackend.seed;
 
 import com.studentclub.studentclubbackend.constants.ApplicationStatus;
-import com.studentclub.studentclubbackend.constants.Roles;
+import com.studentclub.studentclubbackend.constants.MembershipRole;
+import com.studentclub.studentclubbackend.constants.UserRole;
 import com.studentclub.studentclubbackend.models.*;
 import com.studentclub.studentclubbackend.repositories.*;
+import com.studentclub.studentclubbackend.services.MembershipService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class DatabaseSeeder implements CommandLineRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
-
+    private final MembershipService membershipService;
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
     private final VenueRepository venueRepository;
@@ -26,14 +29,17 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final FundingApplicationRepository fundingRepository;
     private final RSVPRepository rsvpRepository;
     private final TicketRepository ticketRepository;
+    private final ClubMembershipRepository clubMembershipRepository;
 
     @Override
     public void run(String... args) throws Exception {
         Date currentDate = new Date();
 
-        // Create Dummy Users
+        // ----------------------------------
+        // 1. Create Dummy Users
+        // ----------------------------------
         List<User> users = new ArrayList<>();
-        String commonPassword = "$2a$10$/IdVLa7eV9pcAcbKK74/yeI88wkJoUFO2lsNd2BJqpHfdctiGXkkK"; // password
+        String commonPassword = "$2a$10$/IdVLa7eV9pcAcbKK74/yeI88wkJoUFO2lsNd2BJqpHfdctiGXkkK"; // "password"
         String[][] userData = {
                 {"john", "john.doe@example.com", "John", "Doe", "STUDENT"},
                 {"jane", "jane.smith@example.com", "Jane", "Smith", "STUDENT"},
@@ -59,16 +65,15 @@ public class DatabaseSeeder implements CommandLineRunner {
             user.setEmail(data[1]);
             user.setFirstName(data[2]);
             user.setLastName(data[3]);
-            user.getRoles().add(Roles.valueOf("ROLE_" + data[4]));
-            if (data[0] == "john") {
-                user.getRoles().add(Roles.valueOf("ROLE_STUDENT_ADMIN"));
-            }
+            user.getRoles().add(UserRole.valueOf("ROLE_" + data[4]));
             users.add(user);
         }
         userRepository.saveAll(users);
 
 
-        // Create Dummy Venues
+        // ----------------------------------
+        // 2. Create Dummy Venues
+        // ----------------------------------
         List<Venue> venues = new ArrayList<>();
         Object[][] venueData = {
                 {"Tech Hall", "123 Tech St", 100},
@@ -88,7 +93,9 @@ public class DatabaseSeeder implements CommandLineRunner {
         venueRepository.saveAll(venues);
 
 
-        // Create Dummy Clubs
+        // ----------------------------------
+        // 3. Create Dummy Clubs and Add Memberships
+        // ----------------------------------
         List<Club> clubs = new ArrayList<>();
         Object[][] clubData = {
                 {"Tech Club", "A club for tech enthusiasts.", new BigDecimal("5000.00")},
@@ -102,17 +109,26 @@ public class DatabaseSeeder implements CommandLineRunner {
             club.setDescription((String) data[1]);
             club.setFunds((BigDecimal) data[2]);
             club.setEvents(new HashSet<>());
-            club.getAdmins().add(users.getFirst());
-            Set<User> members = club.getMembers();
-            for (int i = 1; i < users.size(); i++) {
-                if (i % mod == 0) members.add(users.get(i));
-            }
+            club.setMemberships(new HashSet<>());
             clubs.add(club);
         }
         clubRepository.saveAll(clubs);
 
+        List<Club> existingClubs = clubRepository.findAll();
+        List<User> existingUsers = userRepository.findAll();
+        for (Club club : existingClubs) {
+            for (User user : existingUsers) {
+                if (user.getUsername().equals("john")) {
+                    membershipService.addMembership(club.getId(), user.getId(), MembershipRole.ADMIN);
+                } else if (user.getId() % mod == 0) {
+                    membershipService.addMembership(club.getId(), user.getId(), MembershipRole.MEMBER);
+                }
+            }
+        }
 
-        // Create Events
+        // ----------------------------------
+        // 4. Create Events
+        // ----------------------------------
         List<Event> events = new ArrayList<>();
         Object[][] eventData = {
                 // clubName, venueName, title, description, capacity, date, cost, numAttendees
@@ -124,11 +140,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                 {"Music Club", "Music Arena", "Concert Night", "A concert showcasing our members' talents.", 200, "2024-11-25", new BigDecimal("500"), 180}
         };
 
-        Map<String, Club> clubMap = new HashMap<>();
-        for (Club club : clubs) clubMap.put(club.getName(), club);
+        Map<String, Club> clubMap = clubs.stream()
+                .collect(Collectors.toMap(Club::getName, Function.identity()));
 
-        Map<String, Venue> venueMap = new HashMap<>();
-        for (Venue venue : venues) venueMap.put(venue.getName(), venue);
+        Map<String, Venue> venueMap = venues.stream()
+                .collect(Collectors.toMap(Venue::getName, Function.identity()));
 
         for (Object[] data : eventData) {
             Event event = new Event();
@@ -145,7 +161,9 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         eventRepository.saveAll(events);
 
-        // Create RSVPs
+        // ----------------------------------
+        // 5. Create RSVPs
+        // ----------------------------------
         List<Rsvp> rsvps = new ArrayList<>();
         Object[][] rsvpData = {
                 {users.get(0), events.get(0)},
@@ -163,8 +181,9 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         rsvpRepository.saveAll(rsvps);
 
-
-        // Create Tickets
+        // ----------------------------------
+        // 6. Create Tickets
+        // ----------------------------------
         List<Ticket> tickets = new ArrayList<>();
         Object[][] ticketData = {
                 {rsvps.get(0), "john.doe@example.com", "John", "Doe"},
@@ -185,12 +204,14 @@ public class DatabaseSeeder implements CommandLineRunner {
             ticket.setFirstName((String) data[2]);
             ticket.setLastName((String) data[3]);
             tickets.add(ticket);
-            ((Rsvp)data[0]).getTickets().add(ticket);
+            ((Rsvp) data[0]).getTickets().add(ticket);
         }
         ticketRepository.saveAll(tickets);
         rsvpRepository.saveAll(rsvps);
 
-        // Create FundingApplications
+        // ----------------------------------
+        // 7. Create FundingApplications
+        // ----------------------------------
         List<FundingApplication> fundings = new ArrayList<>();
         Object[][] fundingData = {
                 {"Art Club", "Art Gallery Exhibition Support", new BigDecimal("500.00"), "DRAFT"},
@@ -207,7 +228,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
         fundingRepository.saveAll(fundings);
 
-        logger.info("\n\nFull dummy data seeding completed.\n");
+        log.info("\n\nFull dummy data seeding completed.\n");
     }
-
 }
