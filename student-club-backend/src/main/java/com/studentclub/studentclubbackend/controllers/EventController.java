@@ -17,8 +17,8 @@ import java.util.List;
 @RequestMapping("/api/v1/events")
 public class EventController {
 
-    private EventService eventService;
-    private RsvpService rsvpService;
+    private final EventService eventService;
+    private final RsvpService rsvpService;
 
     @GetMapping
     public ResponseEntity<List<EventDTO>> getAllEvents() {

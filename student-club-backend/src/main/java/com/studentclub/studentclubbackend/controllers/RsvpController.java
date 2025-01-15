@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/api/v1/rsvps")
 public class RsvpController {
 
-    private RsvpService rsvpService;
+    private final RsvpService rsvpService;
 
     @GetMapping
     public ResponseEntity<List<RsvpDTO>> getMyRsvps(

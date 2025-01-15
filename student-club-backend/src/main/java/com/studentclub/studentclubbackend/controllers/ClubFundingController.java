@@ -15,7 +15,7 @@ import java.net.URI;
 @RequestMapping("/api/v1/clubs/{clubId}/funding")
 public class ClubFundingController {
 
-    private FundingApplicationService fundingService;
+    private final FundingApplicationService fundingService;
 
     @GetMapping
     @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")

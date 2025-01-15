@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/v1/clubs")
 public class ClubController {
 
-    private ClubService clubService;
+    private final ClubService clubService;
 
     @GetMapping
     public ResponseEntity<List<ClubDTO>> getAllClubs() {

@@ -15,8 +15,8 @@ import java.util.List;
 @RequestMapping("/api/v1/clubs/{clubId}/members")
 public class ClubMemberController {
 
-    private ClubService clubService;
-    private MembershipService membershipService;
+    private final ClubService clubService;
+    private final MembershipService membershipService;
 
     @GetMapping
     @PreAuthorize("@membershipSecurityService.isMember(#clubId, authentication)")

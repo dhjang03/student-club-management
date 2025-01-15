@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/v1/clubs/{clubId}")
 public class ClubEventController {
 
-    private EventService eventService;
+    private final EventService eventService;
 
     @GetMapping("/events")
     @PreAuthorize("@membershipSecurityService.isMember(#clubId, authentication)")
