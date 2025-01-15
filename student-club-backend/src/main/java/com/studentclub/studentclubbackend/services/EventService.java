@@ -7,7 +7,7 @@ import java.util.List;
 public interface EventService {
     List<EventDTO> getAllEvents();
 
-    EventDTO getEventById(long id);
+    EventDTO getEventById(Long id);
 
     List<EventDTO> searchEventsByKeyword(String keyword);
 
