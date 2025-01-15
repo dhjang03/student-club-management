@@ -30,92 +30,132 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDTO> getAllEvents() {
-        List<Event> events = eventRepository.findAll();
-        return events.stream()
+        return eventRepository.findAll().stream()
                 .map(eventMapper::toEventDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<EventDTO> searchEventsByKeyword(String keyword) {
-        if (keyword == null || keyword.isEmpty()) {
-            return getAllEvents();
-        }
+        List<Event> events = (keyword == null || keyword.isBlank())
+                ? eventRepository.findAll()
+                : eventRepository.findByTitleContainingIgnoreCase(keyword);
 
-        List<Event> events = eventRepository.findByTitleContainingIgnoreCase(keyword);
         return events.stream()
                 .map(eventMapper::toEventDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public EventDTO getEventById(long id) {
-        Event event = eventRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
+    public EventDTO getEventById(Long id) {
+        return eventMapper.toEventDTO(
+                findEventByIdOrThrow(id)
         );
-        return eventMapper.toEventDTO(event);
     }
 
     @Override
-    public List<EventDTO> getEventByClubId(Long id) {
-        List<Event> events = eventRepository.findByClubId(id);
-        return events.stream()
+    public List<EventDTO> getEventByClubId(Long clubId) {
+        return eventRepository.findByClubId(clubId).stream()
                 .map(eventMapper::toEventDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public EventDTO createEvent(Long clubId, EventDTO eventDTO) {
-        Event event = eventMapper.toEvent(eventDTO);
-        Club club = clubRepository.findById(clubId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found")
+        Venue venue = validateVenueAvailability(eventDTO);
+        Club club = validateClubFunds(clubId, eventDTO);
+        Event event = buildEvent(eventDTO, club, venue);
+
+        return eventMapper.toEventDTO(
+                eventRepository.save(event)
         );
+    }
+
+    @Override
+    public EventDTO updateEvent(EventDTO eventDTO) {
+        Event existingEvent = findEventByIdOrThrow(eventDTO.getId());
+        Venue venue = findVenueByIdOrThrow(eventDTO.getVenue().getId());
+        Club club = existingEvent.getClub();
+
+        updateClubFunds(club, existingEvent.getCost(), eventDTO.getCost());
+        updateEventDetails(existingEvent, eventDTO, venue);
+
+        return eventMapper.toEventDTO(
+                eventRepository.save(existingEvent)
+        );
+    }
+
+    @Override
+    public void deleteEvent(Long eventId) {
+        Event event = findEventByIdOrThrow(eventId);
+        eventRepository.delete(event);
+    }
+
+    // Utility and Validation Methods
+    private Venue validateVenueAvailability(EventDTO eventDTO) {
+        Venue venue = findVenueByIdOrThrow(eventDTO.getVenue().getId());
+
+        if (isVenueBooked(venue, eventDTO.getDate())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Venue is not available");
+        }
+
+        return venue;
+    }
+
+    private Club validateClubFunds(Long clubId, EventDTO eventDTO) {
+        Club club = findClubByIdOrThrow(clubId);
 
         if (club.getFunds().compareTo(eventDTO.getCost()) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds to create event");
         }
 
         club.removeFunds(eventDTO.getCost());
-        event.setClub(club);
-        event.setCreatedAt(new Date());
-
-        Event newEvent = eventRepository.save(event);
-        return eventMapper.toEventDTO(newEvent);
+        return club;
     }
 
-    @Override
-    public EventDTO updateEvent(EventDTO eventDTO) {
-        Event existingEvent = eventRepository.findById(eventDTO.getId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
-        );
-        Venue venue = venueRepository.findById(eventDTO.getVenue().getId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue not found")
-        );
+    private boolean isVenueBooked(Venue venue, Date date) {
+        return venue.getEvents().stream()
+                .anyMatch(event -> event.getDate().equals(date));
+    }
 
-        Club club = existingEvent.getClub();
-        BigDecimal delta = eventDTO.getCost().subtract(existingEvent.getCost());
+    private void updateClubFunds(Club club, BigDecimal oldCost, BigDecimal newCost) {
+        BigDecimal delta = newCost.subtract(oldCost);
 
         if (delta.compareTo(BigDecimal.ZERO) > 0) {
             club.addFunds(delta);
-        } else if (delta.compareTo(BigDecimal.ZERO) < 0) {
+        } else {
             club.removeFunds(delta.abs());
         }
-
-        existingEvent.setTitle(eventDTO.getTitle());
-        existingEvent.setDescription(eventDTO.getDescription());
-        existingEvent.setDate(eventDTO.getDate());
-        existingEvent.setCapacity(eventDTO.getCapacity());
-        existingEvent.setVenue(venue);
-
-        Event updatedEvent = eventRepository.save(existingEvent);
-        return eventMapper.toEventDTO(updatedEvent);
     }
 
-    @Override
-    public void deleteEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
-        );
-        eventRepository.delete(event);
+    private void updateEventDetails(Event event, EventDTO eventDTO, Venue venue) {
+        event.setTitle(eventDTO.getTitle());
+        event.setDescription(eventDTO.getDescription());
+        event.setDate(eventDTO.getDate());
+        event.setCapacity(eventDTO.getCapacity());
+        event.setVenue(venue);
+    }
+
+    private Event buildEvent(EventDTO eventDTO, Club club, Venue venue) {
+        Event event = eventMapper.toEvent(eventDTO);
+        event.setClub(club);
+        event.setVenue(venue);
+        event.setCreatedAt(new Date());
+        return event;
+    }
+
+    private Event findEventByIdOrThrow(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+    }
+
+    private Venue findVenueByIdOrThrow(Long venueId) {
+        return venueRepository.findById(venueId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue not found"));
+    }
+
+    private Club findClubByIdOrThrow(Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found"));
     }
 }
