@@ -8,6 +8,8 @@ import java.util.List;
 public interface ClubService {
     List<ClubDTO> findAll();
 
+    List<ClubDTO> findMyClubs(Long userId);
+
     ClubDTO findById(Long id);
 
     List<ClubMemberDTO> findAllMembers(Long clubId);

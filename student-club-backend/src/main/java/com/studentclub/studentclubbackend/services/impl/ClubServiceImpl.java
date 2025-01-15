@@ -6,6 +6,7 @@ import com.studentclub.studentclubbackend.mapper.ClubMapper;
 import com.studentclub.studentclubbackend.mapper.ClubMemberMapper;
 import com.studentclub.studentclubbackend.models.Club;
 import com.studentclub.studentclubbackend.models.ClubMembership;
+import com.studentclub.studentclubbackend.repositories.ClubMembershipRepository;
 import com.studentclub.studentclubbackend.repositories.ClubRepository;
 import com.studentclub.studentclubbackend.services.ClubService;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class ClubServiceImpl implements ClubService {
 
     private ClubRepository clubRepository;
+    private ClubMembershipRepository clubMembershipRepository;
 
     private ClubMapper clubMapper;
     private ClubMemberMapper clubMemberMapper;
@@ -35,14 +37,19 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
+    public List<ClubDTO> findMyClubs(Long userId) {
+
+    }
+
+    @Override
     public ClubDTO findById(Long id) {
-        Club club = getClubById((id));
+        Club club = getClubByIdOrThrow((id));
         return clubMapper.toClubDTO(club);
     }
 
     @Override
     public List<ClubMemberDTO> findAllMembers(Long clubId) {
-        Club club = getClubById(clubId);
+        Club club = getClubByIdOrThrow(clubId);
 
         Set<ClubMembership> memberships = club.getMemberships();
 
@@ -51,7 +58,7 @@ public class ClubServiceImpl implements ClubService {
                 .collect(Collectors.toList());
     }
 
-    private Club getClubById(Long clubId) {
+    private Club getClubByIdOrThrow(Long clubId) {
         return clubRepository.findById(clubId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found"));
     }
