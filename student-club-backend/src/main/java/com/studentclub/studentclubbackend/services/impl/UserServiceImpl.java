@@ -29,8 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtTokenResponse authenticateUser(LoginRequestDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String jwt = jwtUtils.generateToken(userDetails);
@@ -50,8 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User findByUsername(String name) {
-        return userRepository.findByUsername(name).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with username: " + name)
-        );
+        return userRepository.findByUsername(name)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + name));
     }
 }
