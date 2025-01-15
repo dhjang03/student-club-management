@@ -26,26 +26,23 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
 
     @Override
     public FundingDTO getFundingByClubId(Long clubId) {
-        FundingApplication funding = fundingRepository.findByClubId(clubId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found.")
-        );
+        FundingApplication funding = fundingRepository.findByClubId(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
         return fundingMapper.toFundingDTO(funding);
     }
 
     @Override
     public FundingDTO getFundingByFundingId(Long fundingId) {
-        FundingApplication funding = fundingRepository.findById(fundingId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found.")
-        );
+        FundingApplication funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
         return fundingMapper.toFundingDTO(funding);
     }
 
     @Override
     public FundingDTO createFunding(Long clubId, FundingDTO fundingDTO) {
         FundingApplication funding = fundingMapper.toFundingApplication(fundingDTO);
-        Club club = clubRepository.findById(clubId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club Not Found.")
-        );
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club Not Found."));
 
         if (fundingRepository.existsByClubId(clubId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Funding Application Already Exists");
@@ -59,9 +56,8 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
 
     @Override
     public FundingDTO updateFunding(FundingDTO fundingDTO) {
-        FundingApplication existingFunding = fundingRepository.findById(fundingDTO.getId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found.")
-        );
+        FundingApplication existingFunding = fundingRepository.findById(fundingDTO.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
 
         if (existingFunding.getStatus() == ApplicationStatus.APPROVED
                 || existingFunding.getStatus() == ApplicationStatus.REJECTED) {
@@ -83,9 +79,8 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
 
     @Override
     public void deleteFunding(Long fundingId) {
-        FundingApplication funding = fundingRepository.findById(fundingId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found.")
-        );
+        FundingApplication funding = fundingRepository.findById(fundingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding Application Not Found."));
         fundingRepository.delete(funding);
     }
 }

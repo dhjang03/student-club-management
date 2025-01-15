@@ -49,12 +49,10 @@ public class RsvpServiceImpl implements RsvpService {
     @Transactional
     public RsvpDTO createRsvp(Long userId, Long eventId, RsvpDTO rsvpDTO) {
         Rsvp rsvp = rsvpMapper.toRsvp(rsvpDTO);
-        User responder = userRepository.findById(userId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        );
-        Event event = eventRepository.findEventForUpdate(eventId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
-        );
+        User responder = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Event event = eventRepository.findEventForUpdate(eventId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
 
         int numberOfTickets = rsvp.getTickets().size();
 
