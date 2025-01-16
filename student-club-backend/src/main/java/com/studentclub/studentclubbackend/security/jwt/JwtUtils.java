@@ -1,5 +1,6 @@
 package com.studentclub.studentclubbackend.security.jwt;
 
+import com.studentclub.studentclubbackend.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -23,6 +23,7 @@ public class JwtUtils {
 
     private final String ISSUER = "studentclubbackend";
     private final String CLAIM_ROLES = "roles";
+    private final String USER_ID = "id";
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -35,7 +36,7 @@ public class JwtUtils {
     }
 
     public Long getUserIdFromJwtToken(String token) {
-        return Long.valueOf(getAllClaims(token).getId());
+        return getAllClaims(token).get(USER_ID, Long.class);
     }
 
     public String getJwtFromHeader(HttpServletRequest request) {
@@ -46,7 +47,7 @@ public class JwtUtils {
         return null;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(CustomUserDetails userDetails) {
         String username = userDetails.getUsername();
         String roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -56,6 +57,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(username)
                 .claim(CLAIM_ROLES, roles)
+                .claim(USER_ID, userDetails.getId())
                 .issuer(ISSUER)
                 .issuedAt(now)
                 .expiration(exp)
