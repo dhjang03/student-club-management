@@ -38,18 +38,24 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     public List<ClubDTO> findMyClubs(Long userId) {
+        List<Club> clubs = clubMembershipRepository.findByUserId(userId).stream()
+                .map(ClubMembership::getClub)
+                .toList();
 
+        return clubs.stream()
+                .map(clubMapper::toClubDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public ClubDTO findById(Long id) {
-        Club club = getClubByIdOrThrow((id));
+        Club club = findClubByIdOrThrow((id));
         return clubMapper.toClubDTO(club);
     }
 
     @Override
     public List<ClubMemberDTO> findAllMembers(Long clubId) {
-        Club club = getClubByIdOrThrow(clubId);
+        Club club = findClubByIdOrThrow(clubId);
 
         Set<ClubMembership> memberships = club.getMemberships();
 
@@ -58,7 +64,7 @@ public class ClubServiceImpl implements ClubService {
                 .collect(Collectors.toList());
     }
 
-    private Club getClubByIdOrThrow(Long clubId) {
+    private Club findClubByIdOrThrow(Long clubId) {
         return clubRepository.findById(clubId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Club not found"));
     }
