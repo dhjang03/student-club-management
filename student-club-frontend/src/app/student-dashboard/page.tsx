@@ -20,7 +20,7 @@ export function Stat({ title, value, change }: { title: string; value: string; c
   )
 }
 
-export default async function Home() {
+export default async function StudentDashboard() {
   let orders = await getRecentOrders()
 
   return (

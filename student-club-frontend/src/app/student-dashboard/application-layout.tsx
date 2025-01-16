@@ -68,7 +68,7 @@ function AccountDropdownMenu({ anchor }: { anchor: 'top start' | 'bottom end' })
   )
 }
 
-export function ApplicationLayout({
+export function StudentDashboardLayout({
   events,
   children,
 }: {
