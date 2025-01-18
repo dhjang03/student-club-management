@@ -13,14 +13,14 @@ export enum ApplicationStatus {
 }
 
 
-export interface ClubDTO {
+export interface Club {
     id: number;
     name: string;
     description: string;
     funds: number;
 }
 
-export interface ClubMemberDTO {
+export interface ClubMember {
     id: number;
     firstName: string;
     lastName: string;
@@ -28,43 +28,43 @@ export interface ClubMemberDTO {
     membership: string;
 }
 
-export interface VenueDTO {
-    id: number;
+export interface Venue {
+    id: number | null;
     capacity: number;
     name: string;
     address: string;
 }
 
-export interface EventDTO {
-    id: number;
+export interface Event {
+    id: number | null;
     title: string;
     description: string;
     date: string;
-    venue: VenueDTO;
+    venue: Venue;
     cost: number;
-    createdAt: string;
+    createdAt: string | null;
     capacity: number;
     numOfAttendees: number;
 }
 
-export interface FundingDTO {
-    id: number;
+export interface Funding {
+    id: number | null;
     amount: number;
     description: string;
-    createdAt: string;
+    createdAt: string | null;
     status: ApplicationStatus;
 }
 
-export interface LoginRequestDTO {
+export interface LoginRequest {
     username: string;
     password: string;
 }
 
-export interface LoginResponseDTO {
+export interface LoginResponse {
     token: string;
 }
 
-export interface RegisterRequestDTO {
+export interface RegisterRequest {
     username: string;
     password: string;
     email: string;
@@ -73,14 +73,14 @@ export interface RegisterRequestDTO {
     roles: UserRole[];
 }
 
-export interface TicketDTO {
+export interface Ticket {
     id: number;
     firstName: string;
     lastName: string;
     email: string;
 }
 
-export interface UserDTO {
+export interface User {
     id: number;
     firstName: string;
     lastName: string;
@@ -88,10 +88,10 @@ export interface UserDTO {
     roles: UserRole[];
 }
 
-export interface RsvpDTO {
+export interface Rsvp {
     id: string;
-    responder: UserDTO;
-    event: EventDTO;
-    tickets: TicketDTO[];
+    responder: User;
+    event: Event;
+    tickets: Ticket[];
     createdAt: string;
 }

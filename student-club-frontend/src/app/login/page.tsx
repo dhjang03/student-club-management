@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { api } from '@/api/axios';
-import { LoginRequestDTO, LoginResponseDTO } from '@/types/dashboard';
+import { LoginRequest, LoginResponse } from '@/types/dashboard';
 import { useRedirectBasedOnToken } from '@/hooks/useRedirectBasedOnToken';
 
 
@@ -14,10 +14,10 @@ export default function Login() {
 
   const loginHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data: LoginRequestDTO = { username, password };
+    const data: LoginRequest = { username, password };
 
     try {
-      const response = await api.post<LoginResponseDTO>('/api/auth/login', data);
+      const response = await api.post<LoginResponse>('/api/auth/login', data);
       const token = response.data.token;
 
       localStorage.setItem('token', token);
