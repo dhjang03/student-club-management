@@ -119,9 +119,9 @@ public class EventServiceImpl implements EventService {
         BigDecimal delta = newCost.subtract(oldCost);
 
         if (delta.compareTo(BigDecimal.ZERO) > 0) {
-            club.addFunds(delta);
+            club.removeFunds(delta);
         } else {
-            club.removeFunds(delta.abs());
+            club.addFunds(delta.abs());
         }
     }
 
