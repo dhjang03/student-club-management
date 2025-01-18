@@ -2,6 +2,8 @@ package com.studentclub.studentclubbackend.services.impl;
 
 import com.studentclub.studentclubbackend.dto.LoginRequestDTO;
 import com.studentclub.studentclubbackend.dto.RegisterRequestDTO;
+import com.studentclub.studentclubbackend.dto.UserDTO;
+import com.studentclub.studentclubbackend.mapper.UserMapper;
 import com.studentclub.studentclubbackend.models.User;
 import com.studentclub.studentclubbackend.repositories.UserRepository;
 import com.studentclub.studentclubbackend.security.CustomUserDetails;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final UserMapper userMapper;
 
     @Override
     public JwtTokenResponse authenticateUser(LoginRequestDTO loginRequest) {
@@ -47,9 +50,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
+    public UserDTO findByUsername(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User not found with username: %s", username)));
+        return userMapper.toUserDTO(user);
     }
 
     private Authentication authenticate(String username, String password) {
