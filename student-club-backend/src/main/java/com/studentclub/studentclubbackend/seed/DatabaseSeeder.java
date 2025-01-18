@@ -104,7 +104,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 {"Art Club", "A club for art lovers and creators.", new BigDecimal("2000.00")},
                 {"Music Club", "A club for music enthusiasts.", new BigDecimal("3000.00")}
         };
-        int mod = 2;
+        
         for (Object[] data : clubData) {
             Club club = new Club();
             club.setName((String) data[0]);
@@ -122,7 +122,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             for (User user : existingUsers) {
                 if (user.getUsername().equals("john")) {
                     membershipService.addMembership(club.getId(), user.getId(), MembershipRole.ADMIN);
-                } else if (user.getId() % mod == 0) {
+                } else if (user.getId() % club.getId() == 0) {
                     membershipService.addMembership(club.getId(), user.getId(), MembershipRole.MEMBER);
                 }
             }
