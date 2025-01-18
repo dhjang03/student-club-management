@@ -1,20 +1,11 @@
-import { getEvents } from '@/data'
-import type { Metadata } from 'next'
+'use client'
+
 import type React from 'react'
 import { StudentDashboardLayout } from './application-layout'
 
-export const metadata: Metadata = {
-  title: {
-    template: '%s - SCM',
-    default: 'Student Club Management',
-  },
-  description: '',
-}
 
-export default async function StudentLayout({ children }: { children: React.ReactNode }) {
-  let events = await getEvents()
-
+export default function StudentLayout({ children }: { children: React.ReactNode }) {
   return (
-    <StudentDashboardLayout events={events}>{children}</StudentDashboardLayout>
+    <StudentDashboardLayout>{children}</StudentDashboardLayout>
   )
 }
