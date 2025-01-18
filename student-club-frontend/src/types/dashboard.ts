@@ -1,6 +1,6 @@
 export enum UserRole {
-    STUDENT = 'STUDENT',
-    STAFF = 'STAFF'
+    STUDENT = 'ROLE_STUDENT',
+    STAFF = 'ROLE_STAFF'
 }
 
 
@@ -58,6 +58,10 @@ export interface FundingDTO {
 export interface LoginRequestDTO {
     username: string;
     password: string;
+}
+
+export interface LoginResponseDTO {
+    token: string;
 }
 
 export interface RegisterRequestDTO {
