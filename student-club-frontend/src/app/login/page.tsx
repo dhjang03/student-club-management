@@ -25,7 +25,7 @@ export default function Login() {
       redirect();
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed');
+      alert('Incorrect username or password');
     }
   };
 
