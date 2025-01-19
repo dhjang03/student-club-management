@@ -104,7 +104,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 {"Art Club", "A club for art lovers and creators.", new BigDecimal("2000.00")},
                 {"Music Club", "A club for music enthusiasts.", new BigDecimal("3000.00")}
         };
-        
+
         for (Object[] data : clubData) {
             Club club = new Club();
             club.setName((String) data[0]);
