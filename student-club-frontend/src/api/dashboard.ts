@@ -7,6 +7,7 @@ import {
   Funding,
   Rsvp,
   User,
+  ApplicationStatus,
 } from '@/types/dashboard';
 
 export const getMyProfile = async (): Promise<User> => {
@@ -70,8 +71,15 @@ export const getAllFundings = async (): Promise<Funding[]> => {
   return response.data;
 }
 
-export const updateFundingById = async (): Promise<Funding[]> => {
-}
+export const updateFundingStatus = async (
+  fundingId: number,
+  newStatus: ApplicationStatus
+): Promise<Funding> => {
+  const response = await api.put<Funding>(`/api/v1/fundings/${fundingId}`, {
+    status: newStatus
+  });
+  return response.data;
+};
 
 export const getClubFunding = async (clubId: number): Promise<Funding | null> => {
   const response = await api.get<Funding>(`/api/v1/clubs/${clubId}/funding`);
