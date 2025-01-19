@@ -12,7 +12,7 @@ interface MembersSectionProps {
   clubId: number;
   members: ClubMember[];
   isAdmin: boolean;
-  token: string;
+  token: string | null;
 }
 
 export function MembersSection({ clubId, members, isAdmin, token }: MembersSectionProps) {

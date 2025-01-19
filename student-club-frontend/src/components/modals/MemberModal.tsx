@@ -11,7 +11,7 @@ interface MemberModalProps {
   onSuccess: () => void;
   member: ClubMember;
   clubId: number;
-  token: string;
+  token: string | null;
 }
 
 export function MemberModal({ isOpen, onClose, onSuccess, member, clubId, token }: MemberModalProps) {
@@ -20,6 +20,8 @@ export function MemberModal({ isOpen, onClose, onSuccess, member, clubId, token 
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
+    if (!token) return;
+    
     if (action === 'promote') {
       await promoteToAdmin(clubId, member, token);
     } else {
