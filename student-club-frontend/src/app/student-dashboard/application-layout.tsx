@@ -26,7 +26,6 @@ import {
 } from '@heroicons/react/16/solid'
 import {
   UserCircleIcon,
-  Cog6ToothIcon,
   HomeIcon,
   Square2StackIcon,
   TicketIcon,
@@ -157,13 +156,6 @@ export function StudentDashboardLayout({
               >
                 <TicketIcon className="h-5 w-5" />
                 <SidebarLabel>Rsvps</SidebarLabel>
-              </SidebarItem>
-              <SidebarItem
-                href="/student-dashboard/settings"
-                current={pathname.startsWith('/student-dashboard/settings')}
-              >
-                <Cog6ToothIcon className="h-5 w-5" />
-                <SidebarLabel>Settings</SidebarLabel>
               </SidebarItem>
             </SidebarSection>
           </SidebarBody>
