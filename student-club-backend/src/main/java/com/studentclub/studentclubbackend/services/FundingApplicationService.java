@@ -1,6 +1,9 @@
 package com.studentclub.studentclubbackend.services;
 
 import com.studentclub.studentclubbackend.dto.FundingDTO;
+import com.studentclub.studentclubbackend.dto.FundingStatusUpdateDTO;
+
+import java.util.List;
 
 public interface FundingApplicationService {
     FundingDTO getFundingByClubId(Long clubId);
@@ -13,4 +16,7 @@ public interface FundingApplicationService {
 
     void deleteFunding(Long fundingId);
 
+    List<FundingDTO> getAllFundings();
+
+    FundingDTO updateFundingStatus(Long fundingId, FundingStatusUpdateDTO status);
 }

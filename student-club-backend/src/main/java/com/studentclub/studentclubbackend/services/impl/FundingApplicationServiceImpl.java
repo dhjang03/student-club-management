@@ -2,6 +2,7 @@ package com.studentclub.studentclubbackend.services.impl;
 
 import com.studentclub.studentclubbackend.constants.ApplicationStatus;
 import com.studentclub.studentclubbackend.dto.FundingDTO;
+import com.studentclub.studentclubbackend.dto.FundingStatusUpdateDTO;
 import com.studentclub.studentclubbackend.mapper.FundingMapper;
 import com.studentclub.studentclubbackend.models.Club;
 import com.studentclub.studentclubbackend.models.FundingApplication;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +25,22 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
     private final FundingApplicationRepository fundingRepository;
     private final ClubRepository clubRepository;
     private final FundingMapper fundingMapper;
+
+    @Override
+    public List<FundingDTO> getAllFundings() {
+        List<FundingApplication> fundingApplications = fundingRepository.findAll();
+        return fundingApplications.stream()
+                .map(fundingMapper::toFundingDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public FundingDTO updateFundingStatus(Long fundingId, FundingStatusUpdateDTO status) {
+        FundingApplication funding = findFundingByIdOrThrow(fundingId);
+        funding.setStatus(status.getStatus());
+        fundingRepository.save(funding);
+        return fundingMapper.toFundingDTO(funding);
+    }
 
     @Override
     public FundingDTO getFundingByClubId(Long clubId) {
