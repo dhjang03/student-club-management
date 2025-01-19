@@ -51,3 +51,20 @@ export const getUserRole = (token: string | null): string[] | null => {
     return null;
   }
 };
+
+/**
+ * Extracts the user ID from the JWT token
+ * @param token - The JWT token string
+ * @returns The user ID or null if token is invalid
+ */
+export const getUserId = (token: string | null): number | null => {
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode<JWTPayload>(token);
+    return decoded.id;
+  } catch (error) {
+    console.error('Error decoding token:', error instanceof Error ? error.message : 'Unknown error');
+    return null;
+  }
+}
