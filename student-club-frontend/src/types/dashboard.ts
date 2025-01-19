@@ -3,6 +3,11 @@ export enum UserRole {
     STAFF = 'ROLE_STAFF'
 }
 
+export enum Membership {
+    MEMBER = 'MEMBER',
+    ADMIN = 'ADMIN'
+}
+
 
 export enum ApplicationStatus {
     DRAFT = "DRAFT",
