@@ -60,6 +60,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/clubs/**").authenticated()
                         .requestMatchers("/api/v1/events/**").authenticated()
                         .requestMatchers("/api/v1/rsvps/**").authenticated()
+                        .requestMatchers("/api/v1/fundings/**").authenticated()
                         .requestMatchers("/api/v1/venues/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
