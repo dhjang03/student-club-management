@@ -18,6 +18,15 @@ export const getToken = (): string | null => {
 };
 
 /**
+ * Remove JWT token from localStorage
+ */
+export const clearToken = (): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('token');
+  }
+}
+
+/**
  * Validates if the provided JWT token is not expired
  * @param token - The JWT token string
  * @returns Boolean indicating if the token is valid and not expired

@@ -39,6 +39,7 @@ import {
   getMyProfile,
   getMyClubs,
 } from '@/api/dashboard'
+import { clearToken } from '@/utils/auth';
 
 
 export function StudentDashboardLayout({
@@ -77,7 +78,7 @@ export function StudentDashboardLayout({
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearToken();
     router.push('/');
   };
 
