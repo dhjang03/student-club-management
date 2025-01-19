@@ -7,7 +7,7 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/componen
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { ApplicationStatus, Funding } from '@/types/dashboard';
 import { FundingModal } from '@/components/modals/FundingModal';
-import { createFunding, updateFunding, deleteFunding } from '@/api/dashboard';
+import { createFunding, updateFundingByClubId, deleteFunding } from '@/api/dashboard';
 
 interface FundingSectionProps {
   clubId: number;
@@ -46,7 +46,7 @@ export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps
 
   const handleSubmit = (data: Funding) => {
     if (editingFunding) {
-      updateFunding(clubId, data);
+      updateFundingByClubId(clubId, data);
     } else {
       createFunding(clubId, data);
     }

@@ -65,6 +65,14 @@ export const deleteClubEvent = async (
   await api.delete<void>(`/api/v1/clubs/${clubId}/events/${eventId}`);
 };
 
+export const getAllFundings = async (): Promise<Funding[]> => {
+  const response = await api.get<Funding[]>('/api/v1/fundings');
+  return response.data;
+}
+
+export const updateFundingById = async (): Promise<Funding[]> => {
+}
+
 export const getClubFunding = async (clubId: number): Promise<Funding | null> => {
   const response = await api.get<Funding>(`/api/v1/clubs/${clubId}/funding`);
   return response.data;
@@ -91,7 +99,7 @@ export const createFunding = async (
   return response.data;
 };
 
-export const updateFunding = async (
+export const updateFundingByClubId = async (
   clubId: number,
   fundingData: Funding
 ): Promise<Funding> => {
