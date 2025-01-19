@@ -1,20 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { getClubById, getClubEvents, getAllMembers, getClubFunding, getAllVenues } from '@/api/dashboard';
-import { Club, Event, ClubMember, Funding, Venue } from '@/types/dashboard';
+import { Club, Event, ClubMember, Funding, Venue, Membership } from '@/types/dashboard';
 import { FundingSection } from '@/components/sections/FundingSection';
 import { MembersSection } from '@/components/sections/MembersSection';
 import { ClubEventsSection } from '@/components/sections/ClubEventsSection';
 import { Heading } from '@/components/heading';
-import { getToken } from '@/utils/auth';
+import { getToken, getUserId } from '@/utils/auth';
 
 export default function StudentClubsPage() {
   const params = useParams();
   const clubId = Number(params.id);
   const token = getToken();
-  const isAdmin = true; // Placeholder
 
   const [club, setClub] = useState<Club | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
@@ -58,6 +57,12 @@ export default function StudentClubsPage() {
     }
     fetchFunding();
   }, [clubId, token]);
+
+  const userId = getUserId(token);
+
+  const isAdmin = useMemo(() => {
+    return members.some(member => member.id === userId && member.membership === Membership.ADMIN);
+  }, [members, userId]);
 
   return (
     <>
