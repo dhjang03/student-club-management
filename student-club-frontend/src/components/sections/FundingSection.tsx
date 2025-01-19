@@ -7,15 +7,26 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/componen
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { ApplicationStatus, Funding } from '@/types/dashboard';
 import { FundingModal } from '@/components/modals/FundingModal';
+import { createFunding, updateFunding, deleteFunding } from '@/api/dashboard';
 
 interface FundingSectionProps {
+  clubId: number;
   funding: Funding | null;
-  onFundingChange: (newFunding: Funding | null) => void;
+  isAdmin: boolean;
+  token: string | null;
 }
 
-export function FundingSection({ funding, onFundingChange }: FundingSectionProps) {
+export function FundingSection({ clubId, funding, isAdmin, token }: FundingSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingFunding, setEditingFunding] = useState<Funding | null>(null);
+
+  const nonEditableStatuses = [
+    ApplicationStatus.IN_REVIEW,
+    ApplicationStatus.APPROVED,
+    ApplicationStatus.REJECTED,
+  ];
+
+  const isEditable = funding ? !nonEditableStatuses.includes(funding.status) : true;
 
   const handleCreate = () => {
     setEditingFunding(null);
@@ -28,21 +39,34 @@ export function FundingSection({ funding, onFundingChange }: FundingSectionProps
   };
 
   const handleDelete = () => {
-    // TODO: Implement delete logic
-    onFundingChange(null);
+    if (!token || !funding?.id) return;
+    // Prevent deletion if not editable
+    if (!isEditable) return;
+
+    deleteFunding(clubId, funding.id, token);
+    window.location.reload();
   };
 
   const handleSubmit = (data: Funding) => {
-    // TODO: Update or create funding logic
-    // For demonstration, we'll call onFundingChange directly
-    onFundingChange({ ...data, createdAt: new Date().toISOString(), status: ApplicationStatus.DRAFT });
+    if (!token) return;
+
+    if (editingFunding) {
+      updateFunding(clubId, data, token);
+    } else {
+      createFunding(clubId, data, token);
+    }
+
+    setModalOpen(false);
+    window.location.reload();
   };
 
   return (
     <div className="md:w-1/2">
       <div className="flex items-center justify-between">
         <Heading level={2}>Funding Application</Heading>
-        {!funding && <Button onClick={handleCreate}>Create Funding Application</Button>}
+        {isAdmin && !funding && (
+          <Button onClick={handleCreate}>Create Funding Application</Button>
+        )}
       </div>
       <div className="mt-2 space-y-4">
         {funding ? (
@@ -53,15 +77,19 @@ export function FundingSection({ funding, onFundingChange }: FundingSectionProps
               <p className="text-sm text-gray-300">Applied on: {funding.createdAt}</p>
               <p className="text-sm text-gray-300">Status: {funding.status}</p>
             </div>
-            <Dropdown>
-              <DropdownButton plain aria-label="More options">
-                <EllipsisVerticalIcon />
-              </DropdownButton>
-              <DropdownMenu anchor="bottom end">
-                <DropdownItem onClick={handleEdit}>Edit</DropdownItem>
-                <DropdownItem onClick={handleDelete}>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            {/* Only display dropdown for admins */}
+            {isAdmin && (
+              <Dropdown>
+                <DropdownButton plain aria-label="More options">
+                  <EllipsisVerticalIcon />
+                </DropdownButton>
+                <DropdownMenu anchor="bottom end">
+                  {isEditable && <DropdownItem onClick={handleEdit}>Edit</DropdownItem>}
+                  {isEditable && <DropdownItem onClick={handleDelete}>Delete</DropdownItem>}
+                  {!isEditable && <DropdownItem disabled>Not Editable</DropdownItem>}
+                </DropdownMenu>
+              </Dropdown>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-32">

@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Button } from '@/components/button';
 import { Heading } from '@/components/heading';
@@ -7,15 +5,19 @@ import { Divider } from '@/components/divider';
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { Link } from '@/components/link';
-import { Event } from '@/types/dashboard';
 import { ClubEventModal } from '@/components/modals/ClubEventModal';
+import { createClubEvent, updateClubEvent, deleteClubEvent } from '@/api/dashboard';
+import { Event, Venue } from '@/types/dashboard';
 
 interface ClubEventsSectionProps {
+  clubId: number;
   events: Event[];
+  venues: Venue[];
   isAdmin: boolean;
+  token: string | null;
 }
 
-export function ClubEventsSection({ events, isAdmin }: ClubEventsSectionProps) {
+export function ClubEventsSection({ clubId, events, venues, isAdmin, token }: ClubEventsSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -30,12 +32,22 @@ export function ClubEventsSection({ events, isAdmin }: ClubEventsSectionProps) {
   };
 
   const handleDelete = (eventId: number) => {
-    // TODO: Implement delete logic
+    if (!token) return;
+    deleteClubEvent(clubId, eventId, token);
+    window.location.reload();
   };
 
   const handleSubmit = (data: Event) => {
-    // TODO: Implement create/edit logic and update events list
+    if (!token) return;
+
+    if (editingEvent) {
+      updateClubEvent(clubId, data, token);
+    } else {
+      createClubEvent(clubId, data, token);
+    }
+
     setModalOpen(false);
+    window.location.reload();
   };
 
   return (
@@ -69,15 +81,17 @@ export function ClubEventsSection({ events, isAdmin }: ClubEventsSectionProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Dropdown>
-                    <DropdownButton plain aria-label="More options">
-                      <EllipsisVerticalIcon />
-                    </DropdownButton>
-                    <DropdownMenu anchor="bottom end">
-                      <DropdownItem onClick={() => handleEdit(event)}>Edit</DropdownItem>
-                      <DropdownItem onClick={() => handleDelete(event.id)}>Delete</DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
+                  {isAdmin && (
+                    <Dropdown>
+                      <DropdownButton plain aria-label="More options">
+                        <EllipsisVerticalIcon />
+                      </DropdownButton>
+                      <DropdownMenu anchor="bottom end">
+                        <DropdownItem onClick={() => handleEdit(event)}>Edit</DropdownItem>
+                        <DropdownItem onClick={() => event.id !== null && handleDelete(event.id)}>Delete</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  )}
                 </div>
               </div>
             </li>
@@ -91,6 +105,7 @@ export function ClubEventsSection({ events, isAdmin }: ClubEventsSectionProps) {
         onClose={() => setModalOpen(false)}
         onSubmit={handleSubmit}
         eventData={editingEvent || undefined}
+        venues={venues}
       />
     </div>
   );

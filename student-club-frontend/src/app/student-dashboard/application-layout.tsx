@@ -1,6 +1,7 @@
 'use client'
 
-import { Avatar } from '@/components/avatar'
+import React, { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Dropdown,
   DropdownButton,
@@ -9,116 +10,106 @@ import {
   DropdownLabel,
   DropdownMenu,
 } from '@/components/dropdown'
-import { Navbar, NavbarItem, NavbarSection, NavbarSpacer } from '@/components/navbar'
+import { Navbar } from '@/components/navbar'
 import {
   Sidebar,
   SidebarBody,
-  SidebarFooter,
   SidebarHeader,
-  SidebarHeading,
   SidebarItem,
   SidebarLabel,
   SidebarSection,
-  SidebarSpacer,
 } from '@/components/sidebar'
 import { SidebarLayout } from '@/components/sidebar-layout'
-import { getEvents } from '@/data'
 import {
-  ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
   Cog8ToothIcon,
-  LightBulbIcon,
-  PlusIcon,
-  ShieldCheckIcon,
-  UserCircleIcon,
 } from '@heroicons/react/16/solid'
 import {
+  UserCircleIcon,
   Cog6ToothIcon,
   HomeIcon,
-  QuestionMarkCircleIcon,
-  SparklesIcon,
   Square2StackIcon,
   TicketIcon,
 } from '@heroicons/react/20/solid'
-import { usePathname } from 'next/navigation'
+import {
+  User,
+  Club,
+} from '@/types/dashboard'
+import {
+  getMyProfile,
+  getMyClubs,
+} from '@/api/dashboard'
 
-function AccountDropdownMenu({ anchor }: { anchor: 'top start' | 'bottom end' }) {
-  return (
-    <DropdownMenu className="min-w-64" anchor={anchor}>
-      <DropdownItem href="#">
-        <UserCircleIcon />
-        <DropdownLabel>My account</DropdownLabel>
-      </DropdownItem>
-      <DropdownDivider />
-      <DropdownItem href="#">
-        <ShieldCheckIcon />
-        <DropdownLabel>Privacy policy</DropdownLabel>
-      </DropdownItem>
-      <DropdownItem href="#">
-        <LightBulbIcon />
-        <DropdownLabel>Share feedback</DropdownLabel>
-      </DropdownItem>
-      <DropdownDivider />
-      <DropdownItem href="#">
-        <ArrowRightStartOnRectangleIcon />
-        <DropdownLabel>Sign out</DropdownLabel>
-      </DropdownItem>
-    </DropdownMenu>
-  )
-}
 
 export function StudentDashboardLayout({
-  events,
   children,
 }: {
-  events: Awaited<ReturnType<typeof getEvents>>
   children: React.ReactNode
 }) {
-  let pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
+  const [userName, setUserName] = useState(''); 
+  const [showClubs, setShowClubs] = useState(false);
+  const [clubs, setClubs] = useState<Club[]>([]);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      try {
+        const user: User = await getMyProfile(token);
+        setUserName(user.firstName || 'User');
+      } catch (error) {
+        console.error('Failed to fetch user profile', error);
+      }
+    }
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchClubs() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      try {
+        const userClubs: Club[] = await getMyClubs(token);
+        setClubs(userClubs);
+      } catch (error) {
+        console.error('Failed to fetch clubs', error);
+      }
+    }
+    fetchClubs();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    router.push('/');
+  };
+
+  const toggleClubs = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowClubs((prev) => !prev);
+  };
 
   return (
     <SidebarLayout
-      navbar={
-        <Navbar>
-          <NavbarSpacer />
-          <NavbarSection>
-            <Dropdown>
-              <DropdownButton as={NavbarItem}>
-                <Avatar src="/users/erica.jpg" square />
-              </DropdownButton>
-              <AccountDropdownMenu anchor="bottom end" />
-            </Dropdown>
-          </NavbarSection>
-        </Navbar>
-      }
+      navbar={<Navbar />}
       sidebar={
         <Sidebar>
           <SidebarHeader>
             <Dropdown>
               <DropdownButton as={SidebarItem}>
-                <Avatar src="/teams/catalyst.svg" />
-                <SidebarLabel>Catalyst</SidebarLabel>
+                <UserCircleIcon />
+                <SidebarLabel> { userName || "Loading..." } </SidebarLabel>
                 <ChevronDownIcon />
               </DropdownButton>
               <DropdownMenu className="min-w-80 lg:min-w-64" anchor="bottom start">
-                <DropdownItem href="/settings">
+                <DropdownItem href="/#">
                   <Cog8ToothIcon />
-                  <DropdownLabel>Settings</DropdownLabel>
+                  <DropdownLabel>Placeholder</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href="#">
-                  <Avatar slot="icon" src="/teams/catalyst.svg" />
-                  <DropdownLabel>Catalyst</DropdownLabel>
-                </DropdownItem>
-                <DropdownItem href="#">
-                  <Avatar slot="icon" initials="BE" className="bg-purple-500 text-white" />
-                  <DropdownLabel>Big Events</DropdownLabel>
-                </DropdownItem>
-                <DropdownDivider />
-                <DropdownItem href="#">
-                  <PlusIcon />
-                  <DropdownLabel>New team&hellip;</DropdownLabel>
+                <DropdownItem href="/" onClick={handleLogout}>        
+                  <DropdownLabel>Loggout</DropdownLabel>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -126,20 +117,55 @@ export function StudentDashboardLayout({
 
           <SidebarBody>
             <SidebarSection>
-              <SidebarItem href="/student-admin" current={pathname === '/student-admin'}>
-                <HomeIcon />
+              <SidebarItem
+                href="/student-dashboard"
+                current={pathname === '/student-dashboard'}
+              >
+                <HomeIcon className="h-5 w-5" />
                 <SidebarLabel>Home</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/student-admin/events" current={pathname.startsWith('/student-admin/events')}>
-                <Square2StackIcon />
+
+              <SidebarItem
+                href="#"
+                onClick={toggleClubs}
+                current={showClubs}
+              >
+                <Square2StackIcon className="h-5 w-5" />
+                <SidebarLabel>Clubs</SidebarLabel>
+              </SidebarItem>
+              {showClubs && (
+                <div className="ml-6">
+                  {clubs.map((club) => (
+                    <SidebarItem
+                      key={club.id}
+                      href={`/student-dashboard/clubs/${club.id}`} 
+                      current={false}
+                    >
+                      <SidebarLabel>{club.name}</SidebarLabel>
+                    </SidebarItem>
+                  ))}
+                </div>
+              )}
+
+              <SidebarItem
+                href="/student-dashboard/events"
+                current={pathname.startsWith('/student-dashboard/events')}
+              >
+                <Square2StackIcon className="h-5 w-5" />
                 <SidebarLabel>Events</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/student-admin/orders" current={pathname.startsWith('/student-admin/orders')}>
-                <TicketIcon />
+              <SidebarItem
+                href="/student-dashboard/orders"
+                current={pathname.startsWith('/student-dashboard/orders')}
+              >
+                <TicketIcon className="h-5 w-5" />
                 <SidebarLabel>Orders</SidebarLabel>
               </SidebarItem>
-              <SidebarItem href="/student-admin/settings" current={pathname.startsWith('/student-admin/settings')}>
-                <Cog6ToothIcon />
+              <SidebarItem
+                href="/student-dashboard/settings"
+                current={pathname.startsWith('/student-dashboard/settings')}
+              >
+                <Cog6ToothIcon className="h-5 w-5" />
                 <SidebarLabel>Settings</SidebarLabel>
               </SidebarItem>
             </SidebarSection>

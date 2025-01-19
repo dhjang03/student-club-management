@@ -3,35 +3,65 @@
 import { useState } from 'react';
 import { Button } from '@/components/button';
 import { ClubMember } from '@/types/dashboard';
+import { promoteToAdmin, demoteToMember } from '@/api/dashboard';
 
 interface MemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ClubMember) => void;
+  onSuccess: () => void;
   member: ClubMember;
+  clubId: number;
+  token: string;
 }
 
-export function FundingModal({ isOpen, onClose, onSubmit, member }: MemberModalProps) {
-  const [formData, setFormData] = useState(member);
+export function MemberModal({ isOpen, onClose, onSuccess, member, clubId, token }: MemberModalProps) {
+  const [action, setAction] = useState<'promote' | 'demote'>('promote');
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
-    onSubmit(formData);
+  const handleSubmit = async () => {
+    if (action === 'promote') {
+      await promoteToAdmin(clubId, member, token);
+    } else {
+      await demoteToMember(clubId, member, token);
+    }
+    onSuccess();
     onClose();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-      <div className="bg-white p-6 rounded-md w-1/3">
-        <h2 className="text-lg font-semibold mb-4">{member ? 'Edit Funding' : 'Create Funding'}</h2>
-        <input
-          className="border p-2 w-full mb-4"
-          type="number"
-          placeholder="Amount"
-          value={formData.membership}
-          onChange={(e) => setFormData({ ...formData, membership: e.target.value})}
-        />
+      <div className="bg-white p-6 rounded-md w-1/3 space-y-4">
+        <h2 className="text-lg font-semibold mb-4">Edit Membership</h2>
+
+        <div>
+          <p className="font-semibold mb-2">Choose Action:</p>
+          <div className="flex items-center mb-2">
+            <input
+              type="radio"
+              id="promote"
+              name="action"
+              value="promote"
+              checked={action === 'promote'}
+              onChange={() => setAction('promote')}
+              className="mr-2"
+            />
+            <label htmlFor="promote">Promote to Admin</label>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="radio"
+              id="demote"
+              name="action"
+              value="demote"
+              checked={action === 'demote'}
+              onChange={() => setAction('demote')}
+              className="mr-2"
+            />
+            <label htmlFor="demote">Demote to Member</label>
+          </div>
+        </div>
+
         <div className="flex justify-end space-x-2">
           <Button onClick={onClose}>Cancel</Button>
           <Button onClick={handleSubmit}>Submit</Button>
