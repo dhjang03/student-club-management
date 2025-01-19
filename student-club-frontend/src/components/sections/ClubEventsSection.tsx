@@ -67,7 +67,7 @@ export function ClubEventsSection({ clubId, events, venues, isAdmin, token }: Cl
                 <div className="flex gap-6">
                   <div className="space-y-1.5">
                     <div className="text-lg text-gray-100">
-                      <Link href={`/student-admin/events/${event.id}`}>{event.title}</Link>
+                      {event.title}
                     </div>
                     <div className="text-base text-gray-300">
                       {event.date} at {event.venue.name}
