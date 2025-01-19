@@ -1,20 +1,81 @@
-import { Button } from '@/components/button'
+'use client'
+
+import { useEffect, useState, ChangeEvent } from 'react'
 import { Divider } from '@/components/divider'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
-import { Link } from '@/components/link'
 import { Select } from '@/components/select'
-import { getEvents } from '@/data'
 import { EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
-import type { Metadata } from 'next'
+import { getToken } from '@/utils/auth'
+import { Event, Ticket, Rsvp } from '@/types/dashboard'
+import { getAllEvents, createRsvp } from '@/api/dashboard'
+import { RsvpModal } from '@/components/modals/RsvpModal'
 
-export const metadata: Metadata = {
-  title: 'Events',
-}
+export default function Events() {
+  const token = getToken();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [rsvpEvent, setRsvpEvent] = useState<Event | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-export default async function Events() {
-  let events = await getEvents()
+  useEffect(() => {
+    async function fetchData() {
+      if (!token) return;
+      try {
+        const eventsData = await getAllEvents(token);
+        setEvents(eventsData);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, [token]);
+
+  const handleRsvp = (event: Event) => {
+    setRsvpEvent(event);
+    setModalOpen(true);
+  }
+
+  const handleSubmit = async (eventId: number, tickets: Ticket[]) => {
+    if (!token) return;
+    const rsvp: Rsvp = {
+      id: null,
+      responder: null,
+      event: null,
+      createdAt: null,
+      tickets: tickets
+    }
+    await createRsvp(eventId, rsvp, token);
+    window.location.reload();
+  }
+
+  const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as 'name' | 'date';
+    setSortBy(value);
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredEvents = events.filter(event => {
+    const query = searchQuery.toLowerCase();
+    return (
+      event.title.toLowerCase().includes(query) ||
+      event.description.toLowerCase().includes(query)
+    );
+  });
+
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    if (sortBy === 'name') {
+      return a.title.localeCompare(b.title);
+    } else if (sortBy === 'date') {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+    return 0;
+  });
 
   return (
     <>
@@ -25,35 +86,40 @@ export default async function Events() {
             <div className="flex-1">
               <InputGroup>
                 <MagnifyingGlassIcon />
-                <Input name="search" placeholder="Search events&hellip;" />
+                {/* Attach onChange handler for search input */}
+                <Input 
+                  name="search" 
+                  placeholder="Search events…" 
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
               </InputGroup>
             </div>
             <div>
-              <Select name="sort_by">
+              <Select name="sort_by" value={sortBy} onChange={handleSortChange}>
                 <option value="name">Sort by name</option>
                 <option value="date">Sort by date</option>
-                <option value="status">Sort by status</option>
               </Select>
             </div>
           </div>
         </div>
-        <Button>Create event</Button>
       </div>
       <ul className="mt-10">
-        {events.map((event, index) => (
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map((event, index) => (
             <li key={event.id}>
-              <Divider soft={index > 0} />
-              <div className="flex items-center justify-between">
-                <div key={event.id} className="flex gap-6 py-6">
+              {index > 0 && <Divider />}
+              <div className="flex items-center justify-between py-6">
+                <div className="flex gap-6">
                   <div className="space-y-1.5">
-                    <div className="text-base/6 font-semibold">
-                      <Link href={`/student-admin/events/${event.id}`}>{event.name}</Link>
+                    <div className="text-lg text-gray-100">
+                      {event.title}
                     </div>
-                    <div className="text-xs/6 text-zinc-500">
-                      {event.date} at {event.time} <span aria-hidden="true">·</span> {event.location}
+                    <div className="text-base text-gray-300">
+                      {event.date} at {event.venue.name}
                     </div>
-                    <div className="text-xs/6 text-zinc-600">
-                      {event.ticketsSold}/{event.ticketsAvailable} tickets sold
+                    <div className="text-base text-gray-300">
+                      {event.description}
                     </div>
                   </div>
                 </div>
@@ -63,15 +129,25 @@ export default async function Events() {
                       <EllipsisVerticalIcon />
                     </DropdownButton>
                     <DropdownMenu anchor="bottom end">
-                      <DropdownItem href={event.url}>Edit</DropdownItem>
-                      <DropdownItem>Delete</DropdownItem>
+                      <DropdownItem onClick={() => handleRsvp(event)}>Rsvp</DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 </div>
               </div>
             </li>
-        ))}
+          ))
+        ) : (
+          <p className="text-sm text-gray-500">No events found.</p>
+        )}
       </ul>
+      {isModalOpen && rsvpEvent && rsvpEvent.id && (
+        <RsvpModal
+          isOpen={isModalOpen}
+          eventId={rsvpEvent.id}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
     </>
   )
 }
