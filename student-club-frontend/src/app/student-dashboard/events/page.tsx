@@ -24,7 +24,7 @@ export default function Events() {
     async function fetchData() {
       if (!token) return;
       try {
-        const eventsData = await getAllEvents(token);
+        const eventsData = await getAllEvents();
         setEvents(eventsData);
       } catch (error) {
         console.error(error);
@@ -47,7 +47,7 @@ export default function Events() {
       createdAt: null,
       tickets: tickets
     }
-    await createRsvp(eventId, rsvp, token);
+    await createRsvp(eventId, rsvp);
     window.location.reload();
   }
 
