@@ -8,7 +8,6 @@ export enum Membership {
     ADMIN = 'ADMIN'
 }
 
-
 export enum ApplicationStatus {
     DRAFT = "DRAFT",
     SUBMITTED = "SUBMITTED",
@@ -16,7 +15,6 @@ export enum ApplicationStatus {
     APPROVED = "APPROVED",
     REJECTED = "REJECTED"
 }
-
 
 export interface Club {
     id: number;
@@ -79,7 +77,7 @@ export interface RegisterRequest {
 }
 
 export interface Ticket {
-    id: number;
+    id: number | null;
     firstName: string;
     lastName: string;
     email: string;
@@ -94,9 +92,9 @@ export interface User {
 }
 
 export interface Rsvp {
-    id: string;
-    responder: User;
-    event: Event;
+    id: number | null;
+    responder: User | null;
+    event: Event | null;
     tickets: Ticket[];
-    createdAt: string;
+    createdAt: string | null;
 }

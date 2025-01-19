@@ -155,11 +155,11 @@ export function StudentDashboardLayout({
                 <SidebarLabel>Events</SidebarLabel>
               </SidebarItem>
               <SidebarItem
-                href="/student-dashboard/orders"
-                current={pathname.startsWith('/student-dashboard/orders')}
+                href="/student-dashboard/rsvps"
+                current={pathname.startsWith('/student-dashboard/rsvps')}
               >
                 <TicketIcon className="h-5 w-5" />
-                <SidebarLabel>Orders</SidebarLabel>
+                <SidebarLabel>Rsvps</SidebarLabel>
               </SidebarItem>
               <SidebarItem
                 href="/student-dashboard/settings"
