@@ -4,7 +4,6 @@ import { Heading } from '@/components/heading';
 import { Divider } from '@/components/divider';
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
-import { Link } from '@/components/link';
 import { ClubEventModal } from '@/components/modals/ClubEventModal';
 import { createClubEvent, updateClubEvent, deleteClubEvent } from '@/api/dashboard';
 import { Event, Venue } from '@/types/dashboard';
@@ -14,10 +13,9 @@ interface ClubEventsSectionProps {
   events: Event[];
   venues: Venue[];
   isAdmin: boolean;
-  token: string | null;
 }
 
-export function ClubEventsSection({ clubId, events, venues, isAdmin, token }: ClubEventsSectionProps) {
+export function ClubEventsSection({ clubId, events, venues, isAdmin }: ClubEventsSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -32,18 +30,15 @@ export function ClubEventsSection({ clubId, events, venues, isAdmin, token }: Cl
   };
 
   const handleDelete = (eventId: number) => {
-    if (!token) return;
-    deleteClubEvent(clubId, eventId, token);
+    deleteClubEvent(clubId, eventId);
     window.location.reload();
   };
 
   const handleSubmit = (data: Event) => {
-    if (!token) return;
-
     if (editingEvent) {
-      updateClubEvent(clubId, data, token);
+      updateClubEvent(clubId, data);
     } else {
-      createClubEvent(clubId, data, token);
+      createClubEvent(clubId, data);
     }
 
     setModalOpen(false);

@@ -12,10 +12,9 @@ interface MembersSectionProps {
   clubId: number;
   members: ClubMember[];
   isAdmin: boolean;
-  token: string | null;
 }
 
-export function MembersSection({ clubId, members, isAdmin, token }: MembersSectionProps) {
+export function MembersSection({ clubId, members, isAdmin }: MembersSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<ClubMember | null>(null);
 
@@ -67,7 +66,6 @@ export function MembersSection({ clubId, members, isAdmin, token }: MembersSecti
           onSuccess={() => window.location.reload()}
           member={editingMember}
           clubId={clubId}
-          token={token}
         />
       )}
     </div>

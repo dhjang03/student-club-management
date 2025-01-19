@@ -11,10 +11,8 @@ export default function StudentDashboard() {
   const [clubs, setClubs] = useState<Club[]>([]);
   useEffect(() => {
       async function fetchClubs() {
-        const token = localStorage.getItem('token');
-        if (!token) return;
         try {
-          const userClubs: Club[] = await getMyClubs(token);
+          const userClubs: Club[] = await getMyClubs();
           setClubs(userClubs);
         } catch (error) {
           console.error('Failed to fetch clubs', error);

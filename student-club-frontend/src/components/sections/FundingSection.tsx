@@ -13,10 +13,9 @@ interface FundingSectionProps {
   clubId: number;
   funding: Funding | null;
   isAdmin: boolean;
-  token: string | null;
 }
 
-export function FundingSection({ clubId, funding, isAdmin, token }: FundingSectionProps) {
+export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingFunding, setEditingFunding] = useState<Funding | null>(null);
 
@@ -39,21 +38,17 @@ export function FundingSection({ clubId, funding, isAdmin, token }: FundingSecti
   };
 
   const handleDelete = () => {
-    if (!token || !funding?.id) return;
-    // Prevent deletion if not editable
-    if (!isEditable) return;
+    if (!funding?.id || !isEditable) return;
 
-    deleteFunding(clubId, funding.id, token);
+    deleteFunding(clubId, funding.id);
     window.location.reload();
   };
 
   const handleSubmit = (data: Funding) => {
-    if (!token) return;
-
     if (editingFunding) {
-      updateFunding(clubId, data, token);
+      updateFunding(clubId, data);
     } else {
-      createFunding(clubId, data, token);
+      createFunding(clubId, data);
     }
 
     setModalOpen(false);

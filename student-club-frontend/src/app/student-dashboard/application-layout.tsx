@@ -54,10 +54,8 @@ export function StudentDashboardLayout({
 
   useEffect(() => {
     async function fetchUserData() {
-      const token = localStorage.getItem('token');
-      if (!token) return;
       try {
-        const user: User = await getMyProfile(token);
+        const user: User = await getMyProfile();
         setUserName(user.firstName || 'User');
       } catch (error) {
         console.error('Failed to fetch user profile', error);
@@ -68,10 +66,8 @@ export function StudentDashboardLayout({
 
   useEffect(() => {
     async function fetchClubs() {
-      const token = localStorage.getItem('token');
-      if (!token) return;
       try {
-        const userClubs: Club[] = await getMyClubs(token);
+        const userClubs: Club[] = await getMyClubs();
         setClubs(userClubs);
       } catch (error) {
         console.error('Failed to fetch clubs', error);

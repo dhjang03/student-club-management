@@ -23,14 +23,11 @@ export default function StudentClubsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!token) return;
       try {
-        console.log('Fetching data for club:', clubId);
-        console.log('Token:', token);
         const [clubData, eventsData, membersData, venuesData] = await Promise.all([
-          getClubById(clubId, token),
-          getClubEvents(clubId, token),
-          getAllMembers(clubId, token),
+          getClubById(clubId),
+          getClubEvents(clubId),
+          getAllMembers(clubId),
           getAllVenues(),
         ]);
         setClub(clubData);
@@ -42,13 +39,12 @@ export default function StudentClubsPage() {
       }
     }
     fetchData();
-  }, [clubId, token]);
+  }, [clubId]);
 
   useEffect(() => {
     async function fetchFunding() {
-      if (!token) return;
       try {
-        const fundingData = await getClubFunding(clubId, token);
+        const fundingData = await getClubFunding(clubId);
         setFunding(fundingData);
       } catch (error) {
         console.error('Failed to fetch funding data:', error);
@@ -56,7 +52,7 @@ export default function StudentClubsPage() {
       }
     }
     fetchFunding();
-  }, [clubId, token]);
+  }, [clubId]);
 
   const userId = getUserId(token);
 
@@ -82,21 +78,18 @@ export default function StudentClubsPage() {
         <FundingSection 
           clubId={clubId}
           funding={funding}
-          isAdmin={isAdmin}
-          token={token} />
+          isAdmin={isAdmin} />
         <MembersSection 
           clubId={clubId}
           members={members}
-          isAdmin={isAdmin}
-          token={token} />
+          isAdmin={isAdmin} />
       </div>
 
       <ClubEventsSection 
         clubId={clubId}
         events={events} 
         venues={venues} 
-        isAdmin={isAdmin}
-        token={token} />
+        isAdmin={isAdmin} />
     </>
   );
 }

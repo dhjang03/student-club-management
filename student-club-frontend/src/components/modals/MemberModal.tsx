@@ -11,21 +11,18 @@ interface MemberModalProps {
   onSuccess: () => void;
   member: ClubMember;
   clubId: number;
-  token: string | null;
 }
 
-export function MemberModal({ isOpen, onClose, onSuccess, member, clubId, token }: MemberModalProps) {
+export function MemberModal({ isOpen, onClose, onSuccess, member, clubId }: MemberModalProps) {
   const [action, setAction] = useState<'promote' | 'demote'>('promote');
 
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
-    if (!token) return;
-    
     if (action === 'promote') {
-      await promoteToAdmin(clubId, member, token);
+      await promoteToAdmin(clubId, member);
     } else {
-      await demoteToMember(clubId, member, token);
+      await demoteToMember(clubId, member);
     }
     onSuccess();
     onClose();
