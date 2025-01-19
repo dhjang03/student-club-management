@@ -18,7 +18,7 @@ public class ClubFundingController {
     private final FundingApplicationService fundingService;
 
     @GetMapping
-    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isAdmin(#clubId, authentication)")
+    @PreAuthorize("hasRole('STAFF') || @membershipSecurityService.isMember(#clubId, authentication)")
     public ResponseEntity<FundingDTO> getClubFunding(
             @PathVariable Long clubId
     ) {
