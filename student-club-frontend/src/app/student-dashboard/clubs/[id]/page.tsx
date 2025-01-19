@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { getClubById, getClubEvents, getAllMembers, getClubFunding } from '@/api/dashboard';
-import { Club, Event, ClubMember, Funding } from '@/types/dashboard';
+import { getClubById, getClubEvents, getAllMembers, getClubFunding, getAllVenues } from '@/api/dashboard';
+import { Club, Event, ClubMember, Funding, Venue } from '@/types/dashboard';
 import { FundingSection } from '@/components/sections/FundingSection';
 import { MembersSection } from '@/components/sections/MembersSection';
 import { ClubEventsSection } from '@/components/sections/ClubEventsSection';
@@ -20,6 +20,7 @@ export default function StudentClubsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [members, setMembers] = useState<ClubMember[]>([]);
   const [funding, setFunding] = useState<Funding | null>(null);
+  const [venues, setVenues] = useState<Venue[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -27,14 +28,16 @@ export default function StudentClubsPage() {
       try {
         console.log('Fetching data for club:', clubId);
         console.log('Token:', token);
-        const [clubData, eventsData, membersData] = await Promise.all([
+        const [clubData, eventsData, membersData, venuesData] = await Promise.all([
           getClubById(clubId, token),
           getClubEvents(clubId, token),
           getAllMembers(clubId, token),
+          getAllVenues(),
         ]);
         setClub(clubData);
         setEvents(eventsData);
         setMembers(membersData);
+        setVenues(venuesData);
       } catch (error) {
         console.error(error);
       }
@@ -71,11 +74,24 @@ export default function StudentClubsPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <FundingSection funding={funding} onFundingChange={setFunding} />
-        <MembersSection members={members} />
+        <FundingSection 
+          clubId={clubId}
+          funding={funding}
+          isAdmin={isAdmin}
+          token={token} />
+        <MembersSection 
+          clubId={clubId}
+          members={members}
+          isAdmin={isAdmin}
+          token={token} />
       </div>
 
-      <ClubEventsSection events={events} isAdmin={isAdmin} />
+      <ClubEventsSection 
+        clubId={clubId}
+        events={events} 
+        venues={venues} 
+        isAdmin={isAdmin}
+        token={token} />
     </>
   );
 }
