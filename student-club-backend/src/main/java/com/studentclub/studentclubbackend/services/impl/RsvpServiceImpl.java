@@ -2,8 +2,10 @@ package com.studentclub.studentclubbackend.services.impl;
 
 import com.studentclub.studentclubbackend.dto.RsvpDTO;
 import com.studentclub.studentclubbackend.mapper.RsvpMapper;
+import com.studentclub.studentclubbackend.mapper.TicketMapper;
 import com.studentclub.studentclubbackend.models.Event;
 import com.studentclub.studentclubbackend.models.Rsvp;
+import com.studentclub.studentclubbackend.models.Ticket;
 import com.studentclub.studentclubbackend.models.User;
 import com.studentclub.studentclubbackend.repositories.EventRepository;
 import com.studentclub.studentclubbackend.repositories.RSVPRepository;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +30,7 @@ public class RsvpServiceImpl implements RsvpService {
     private final EventRepository eventRepository;
     private final RSVPRepository rsvpRepository;
     private final RsvpMapper rsvpMapper;
+    private final TicketMapper ticketMapper;
 
     @Override
     public List<RsvpDTO> findRsvpsByUserId(Long userId) {
@@ -85,6 +89,16 @@ public class RsvpServiceImpl implements RsvpService {
         rsvp.setResponder(responder);
         rsvp.setEvent(event);
         rsvp.setCreatedAt(new Date());
+
+        Set<Ticket> tickets = rsvpDTO.getTickets().stream()
+                .map(ticketDTO -> {
+                    Ticket ticket = ticketMapper.toTicket(ticketDTO);
+                    ticket.setRsvp(rsvp);
+                    return ticket;
+                })
+                .collect(Collectors.toSet());
+
+        rsvp.setTickets(tickets);
         return rsvp;
     }
 }
