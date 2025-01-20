@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Dropdown,
@@ -20,25 +20,17 @@ import {
   SidebarSection,
 } from '@/components/sidebar'
 import { SidebarLayout } from '@/components/sidebar-layout'
-import {
-  ChevronDownIcon,
-  Cog8ToothIcon,
-} from '@heroicons/react/16/solid'
+import { ChevronDownIcon, Cog8ToothIcon } from '@heroicons/react/16/solid'
 import {
   UserCircleIcon,
   HomeIcon,
   Square2StackIcon,
   TicketIcon,
 } from '@heroicons/react/20/solid'
-import {
-  User,
-  Club,
-} from '@/types/dashboard'
-import {
-  getMyProfile,
-  getMyClubs,
-} from '@/api/dashboard'
+import { User, Club } from '@/types/dashboard'
+import { getMyProfile, getMyClubs } from '@/api/dashboard'
 import { clearToken } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
 
 
 export function StudentDashboardLayout({
@@ -51,6 +43,7 @@ export function StudentDashboardLayout({
   const [userName, setUserName] = useState(''); 
   const [showClubs, setShowClubs] = useState(false);
   const [clubs, setClubs] = useState<Club[]>([]);
+  const { setToken } = useAuth();
 
   useEffect(() => {
     async function fetchUserData() {
@@ -78,6 +71,7 @@ export function StudentDashboardLayout({
 
   const handleLogout = () => {
     clearToken();
+    setToken(null);
     router.push('/');
   };
 

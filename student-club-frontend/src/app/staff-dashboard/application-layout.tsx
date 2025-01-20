@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Dropdown,
@@ -20,21 +20,12 @@ import {
   SidebarSection,
 } from '@/components/sidebar'
 import { SidebarLayout } from '@/components/sidebar-layout'
-import {
-  ChevronDownIcon,
-  Cog8ToothIcon,
-} from '@heroicons/react/16/solid'
-import {
-  UserCircleIcon,
-  HomeIcon,
-} from '@heroicons/react/20/solid'
-import {
-  User,
-} from '@/types/dashboard'
-import {
-  getMyProfile,
-} from '@/api/dashboard'
+import { ChevronDownIcon, Cog8ToothIcon } from '@heroicons/react/16/solid'
+import { UserCircleIcon, HomeIcon } from '@heroicons/react/20/solid'
+import { User } from '@/types/dashboard'
+import { getMyProfile } from '@/api/dashboard'
 import { clearToken } from '@/utils/auth';
+import { useAuth } from '@/context/AuthContext';
 
 
 export function StaffDashboardLayout({
@@ -44,7 +35,8 @@ export function StaffDashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [userName, setUserName] = useState(''); 
+  const [userName, setUserName] = useState('');
+  const { setToken } = useAuth();
 
   useEffect(() => {
     async function fetchUserData() {
@@ -60,6 +52,7 @@ export function StaffDashboardLayout({
 
   const handleLogout = () => {
     clearToken();
+    setToken(null);
     router.push('/');
   };
 
@@ -72,7 +65,7 @@ export function StaffDashboardLayout({
             <Dropdown>
               <DropdownButton as={SidebarItem}>
                 <UserCircleIcon />
-                <SidebarLabel> { userName || "Loading..." } </SidebarLabel>
+                <SidebarLabel> {userName || "Loading..."} </SidebarLabel>
                 <ChevronDownIcon />
               </DropdownButton>
               <DropdownMenu className="min-w-80 lg:min-w-64" anchor="bottom start">
@@ -81,7 +74,7 @@ export function StaffDashboardLayout({
                   <DropdownLabel>Placeholder</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
-                <DropdownItem href="/" onClick={handleLogout}>        
+                <DropdownItem href="/" onClick={handleLogout}>
                   <DropdownLabel>Loggout</DropdownLabel>
                 </DropdownItem>
               </DropdownMenu>

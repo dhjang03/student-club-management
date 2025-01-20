@@ -4,12 +4,13 @@ import { useState, FormEvent } from 'react';
 import { api } from '@/api/axios';
 import { LoginRequest, LoginResponse } from '@/types/dashboard';
 import { useRedirectBasedOnToken } from '@/hooks/useRedirectBasedOnToken';
-
+import { useAuth } from '@/context/AuthContext';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { redirect } = useRedirectBasedOnToken();
+  const { setToken } = useAuth();
 
 
   const loginHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -21,7 +22,7 @@ export default function Login() {
       const token = response.data.token;
 
       localStorage.setItem('token', token);
-      console.log('Token: ', token);
+      setToken(token)
       redirect();
     } catch (error) {
       console.error('Login error:', error);
