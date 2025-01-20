@@ -93,14 +93,14 @@ export function ClubEventsSection({
               {index > 0 && <Divider />}
               <div className="flex items-center justify-between py-6">
                 <div className="space-y-1.5">
-                  <div className="text-lg text-gray-100">{event.title}</div>
-                  <div className="text-base text-gray-300">
+                  <div className="text-lg text-gray-500 font-extrabold">{event.title}</div>
+                  <div className="text-base text-gray-500">
                     {event.date} at {event.venue.name}
                   </div>
-                  <div className="text-base text-gray-300">
+                  <div className="text-base text-gray-500">
                     {event.description}
                   </div>
-                  <div className="text-base text-gray-400">
+                  <div className="text-base text-gray-500">
                     Cost: ${event.cost} · Capacity: {event.capacity} · Attendees: {event.numOfAttendees}
                   </div>
                 </div>

@@ -112,8 +112,8 @@ export default function StudentClubsPage() {
         <Heading>{club?.name || 'Loading...'}</Heading>
         {club && (
           <div className="mt-4">
-            <p className="text-lg text-gray-300">{club.description}</p>
-            <p className="text-base text-gray-300 font-semibold mt-2">
+            <p className="text-lg text-gray-500">{club.description}</p>
+            <p className="text-base text-gray-500 font-semibold mt-2">
               Funds Available: {club.funds ? `$${club.funds}` : 'N/A'}
             </p>
           </div>

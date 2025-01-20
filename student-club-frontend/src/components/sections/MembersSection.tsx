@@ -43,11 +43,11 @@ export function MembersSection({
             <li key={member.id}>
               <Divider />
               <div className="flex items-center justify-between py-2">
-                <span className="text-xs text-zinc-300">
+                <span className="text-xs text-zinc-500">
                   {member.firstName} {member.lastName}
                 </span>
                 <div className="flex items-center gap-4">
-                  <span className="text-xs text-zinc-300">
+                  <span className="text-xs text-zinc-500">
                     {member.membership}
                   </span>
                   {isAdmin && (

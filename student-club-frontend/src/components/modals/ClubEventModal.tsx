@@ -51,18 +51,18 @@ export function ClubEventModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
       <div className="bg-white p-6 rounded-md w-1/3 space-y-4">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold text-gray-500">
           {eventData ? 'Edit Event' : 'Create Event'}
         </h2>
 
         {/* Title Field */}
         <div>
-          <label htmlFor="title" className="block font-semibold mb-1">
+          <label htmlFor="title" className="block font-semibold mb-1 text-gray-500">
             Title
           </label>
           <input
             id="title"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             type="text"
             placeholder="Title"
             value={formData.title}
@@ -74,12 +74,12 @@ export function ClubEventModal({
 
         {/* Description Field */}
         <div>
-          <label htmlFor="description" className="block font-semibold mb-1">
+          <label htmlFor="description" className="block font-semibold mb-1 text-gray-500">
             Description
           </label>
           <textarea
             id="description"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             placeholder="Description"
             value={formData.description}
             onChange={(e) =>
@@ -90,12 +90,12 @@ export function ClubEventModal({
 
         {/* Date Field */}
         <div>
-          <label htmlFor="date" className="block font-semibold mb-1">
+          <label htmlFor="date" className="block font-semibold mb-1 text-gray-500">
             Date
           </label>
           <input
             id="date"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             type="date"
             value={formData.date}
             onChange={(e) =>
@@ -106,12 +106,12 @@ export function ClubEventModal({
 
         {/* Cost Field */}
         <div>
-          <label htmlFor="cost" className="block font-semibold mb-1">
+          <label htmlFor="cost" className="block font-semibold mb-1 text-gray-500">
             Cost
           </label>
           <input
             id="cost"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             type="number"
             placeholder="Cost"
             value={formData.cost}
@@ -123,12 +123,12 @@ export function ClubEventModal({
 
         {/* Capacity Field */}
         <div>
-          <label htmlFor="capacity" className="block font-semibold mb-1">
+          <label htmlFor="capacity" className="block font-semibold mb-1 text-gray-500">
             Capacity
           </label>
           <input
             id="capacity"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             type="number"
             placeholder="Capacity"
             value={formData.capacity}
@@ -140,12 +140,12 @@ export function ClubEventModal({
 
         {/* Venue Dropdown */}
         <div>
-          <label htmlFor="venue" className="block font-semibold mb-1">
+          <label htmlFor="venue" className="block font-semibold mb-1 text-gray-500">
             Venue
           </label>
           <select
             id="venue"
-            className="border p-2 w-full"
+            className="border p-2 w-full text-gray-500"
             value={formData.venue.id ?? ''}
             onChange={(e) => {
               const selectedVenueId = Number(e.target.value);

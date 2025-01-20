@@ -73,10 +73,10 @@ export default function RsvpList() {
                   </button>
                   {/* Event Info */}
                   <div>
-                    <div className="text-lg font-medium text-gray-100">
+                    <div className="text-lg font-medium text-gray-100 text-gray-500">
                       {rsvp.event?.title || 'Untitled Event'}
                     </div>
-                    <div className="text-sm text-gray-300">
+                    <div className="text-sm text-gray-300 text-gray-500">
                       {rsvp.event?.date} at {rsvp.event?.venue.name}
                     </div>
                   </div>
@@ -84,7 +84,7 @@ export default function RsvpList() {
                 <div className="flex items-center">
                   <Dropdown>
                     <DropdownButton plain aria-label="More options">
-                      <EllipsisVerticalIcon className="h-5 w-5 text-gray-300"/>
+                      <EllipsisVerticalIcon className="h-5 w-5 text-gray-500"/>
                     </DropdownButton>
                     <DropdownMenu anchor="bottom end">
                       <DropdownItem onClick={() => rsvp.id && handleDelete(rsvp.id)}>
@@ -98,7 +98,7 @@ export default function RsvpList() {
               {rsvp.id && expandedRsvpIds.has(rsvp.id) && (
                 <div className="ml-8 pl-4 border-l border-gray-100">
                   {rsvp.tickets.length > 0 ? (
-                    <table className="min-w-full text-sm text-left text-gray-300">
+                    <table className="min-w-full text-sm text-left text-gray-500">
                       <thead>
                         <tr>
                           <th className="py-1">First Name</th>

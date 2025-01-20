@@ -93,17 +93,17 @@ export function FundingSection({
         {funding ? (
           <div
             key={funding.id}
-            className="p-4 border rounded-md bg-gray-800 flex justify-between items-start"
+            className="p-4 border rounded-md flex justify-between items-start"
           >
             <div>
-              <p className="text-sm text-gray-300">Amount: ${funding.amount}</p>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-gray-500">Amount: ${funding.amount}</p>
+              <p className="text-sm text-gray-500">
                 Description: {funding.description}
               </p>
-              <p className="text-sm text-gray-300">
+              <p className="text-sm text-gray-500">
                 Applied on: {funding.createdAt}
               </p>
-              <p className="text-sm text-gray-300">Status: {funding.status}</p>
+              <p className="text-sm text-gray-500">Status: {funding.status}</p>
             </div>
             {/* Only display dropdown for admins */}
             {isAdmin && (

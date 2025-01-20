@@ -34,11 +34,11 @@ export function MemberModal({ isOpen, onClose, onSuccess, member, clubId }: Memb
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
       <div className="bg-white p-6 rounded-md w-1/3 space-y-4">
-        <h2 className="text-lg font-semibold mb-4">Edit Membership</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-500">Edit Membership</h2>
 
         <div>
-          <p className="font-semibold mb-2">Choose Action:</p>
-          <div className="flex items-center mb-2">
+          <p className="font-semibold mb-2 text-gray-500">Choose Action:</p>
+          <div className="flex items-center mb-2 text-gray-500">
             <input
               type="radio"
               id="promote"
@@ -46,11 +46,11 @@ export function MemberModal({ isOpen, onClose, onSuccess, member, clubId }: Memb
               value="promote"
               checked={action === 'promote'}
               onChange={() => setAction('promote')}
-              className="mr-2"
+              className="mr-2 text-gray-500"
             />
             <label htmlFor="promote">Promote to Admin</label>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center text-gray-500">
             <input
               type="radio"
               id="demote"

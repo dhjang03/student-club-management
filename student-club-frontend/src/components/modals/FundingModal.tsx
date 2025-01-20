@@ -42,18 +42,18 @@ export function FundingModal({ isOpen, onClose, onSubmit, funding }: FundingModa
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
       <div className="bg-white p-6 rounded-md w-1/3 space-y-4">
-        <h2 className="text-lg font-semibold mb-4">
+        <h2 className="text-lg font-semibold mb-4 text-gray-500">
           {funding ? 'Edit Funding' : 'Create Funding'}
         </h2>
         
         {/* Description Field */}
         <div>
-          <label htmlFor="description" className="block font-semibold mb-1">
+          <label htmlFor="description" className="block font-semibold mb-1 text-gray-500">
             Description
           </label>
           <input
             id="description"
-            className="border p-2 w-full mb-4"
+            className="border p-2 w-full mb-4 text-gray-500"
             type="text"
             placeholder="Description"
             value={formData.description}
@@ -65,12 +65,12 @@ export function FundingModal({ isOpen, onClose, onSubmit, funding }: FundingModa
         
         {/* Amount Field */}
         <div>
-          <label htmlFor="amount" className="block font-semibold mb-1">
+          <label htmlFor="amount" className="block font-semibold mb-1 text-gray-500">
             Amount
           </label>
           <input
             id="amount"
-            className="border p-2 w-full mb-4"
+            className="border p-2 w-full mb-4 text-gray-500"
             type="number"
             placeholder="Amount"
             value={formData.amount}
@@ -82,12 +82,12 @@ export function FundingModal({ isOpen, onClose, onSubmit, funding }: FundingModa
 
         {/* Status Dropdown */}
         <div>
-          <label htmlFor="status" className="block font-semibold mb-1">
+          <label htmlFor="status" className="block font-semibold mb-1 text-gray-500">
             Status
           </label>
           <select
             id="status"
-            className="border p-2 w-full mb-4"
+            className="border p-2 w-full mb-4 text-gray-500"
             value={formData.status}
             onChange={(e) =>
               setFormData({ ...formData, status: e.target.value as ApplicationStatus })

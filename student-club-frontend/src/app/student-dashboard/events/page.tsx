@@ -114,13 +114,13 @@ export default function Events() {
               <div className="flex items-center justify-between py-6">
                 <div className="flex gap-6">
                   <div className="space-y-1.5">
-                    <div className="text-lg text-gray-100">
+                    <div className="text-lg text-gray-500 font-extrabold">
                       {event.title}
                     </div>
-                    <div className="text-base text-gray-300">
+                    <div className="text-base text-gray-500">
                       {event.date} at {event.venue.name}
                     </div>
-                    <div className="text-base text-gray-300">
+                    <div className="text-base text-gray-500">
                       {event.description}
                     </div>
                   </div>

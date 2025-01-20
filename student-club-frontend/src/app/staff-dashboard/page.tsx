@@ -55,13 +55,13 @@ export default function StaffDashboard() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-100">Staff Dashboard - Funding Applications</h2>
+        <h2 className="text-xl font-bold text-gray-500">Staff Dashboard - Funding Applications</h2>
 
         {/* Status Filter Dropdown */}
         <div className="flex items-center space-x-2">
           <span>Filter:</span>
           <select
-            className="border rounded px-2 py-1 bg-gray-300" 
+            className="border rounded px-2 py-1 text-gray-500" 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'ALL')}
           >
@@ -75,24 +75,23 @@ export default function StaffDashboard() {
       </div>
 
       {filteredFundings.length === 0 ? (
-        <div className="text-gray-400">No funding applications found for this filter.</div>
+        <div className="text-gray-500">No funding applications found for this filter.</div>
       ) : (
         <div className="space-y-4">
           {filteredFundings.map((funding) => (
             <div
               key={funding.id}
-              className="p-4 border rounded-md bg-gray-800 flex justify-between items-start"
+              className="p-4 border rounded-md flex justify-between items-start"
             >
               <div>
-                <p className="text-sm text-gray-300">ID: {funding.id}</p>
-                <p className="text-sm text-gray-300">Amount: ${funding.amount}</p>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-500">Amount: ${funding.amount}</p>
+                <p className="text-sm text-gray-500">
                   Description: {funding.description}
                 </p>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-500">
                   Applied on: {funding.createdAt ? new Date(funding.createdAt).toLocaleString() : 'N/A'}
                 </p>
-                <p className="text-sm text-gray-300">Status: {funding.status}</p>
+                <p className="text-sm text-gray-500">Status: {funding.status}</p>
               </div>
 
               {/* Three-dot dropdown for changing status if not APPROVED/REJECTED */}
@@ -100,7 +99,7 @@ export default function StaffDashboard() {
                 {funding.status === ApplicationStatus.APPROVED ||
                 funding.status === ApplicationStatus.REJECTED ? (
                   // If approved/rejected, no further status changes
-                  <div className="text-gray-400">No further actions</div>
+                  <div className="text-gray-500">No further actions</div>
                 ) : (
                   <Dropdown>
                     <DropdownButton plain aria-label="More options">
