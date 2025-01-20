@@ -3,19 +3,34 @@
 import { useState } from 'react';
 import { Button } from '@/components/button';
 import { Heading } from '@/components/heading';
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { ApplicationStatus, Funding } from '@/types/dashboard';
 import { FundingModal } from '@/components/modals/FundingModal';
-import { createFunding, updateFundingByClubId, deleteFunding } from '@/api/dashboard';
+import {
+  createFunding,
+  updateFundingByClubId,
+  deleteFunding,
+} from '@/api/dashboard';
 
 interface FundingSectionProps {
   clubId: number;
   funding: Funding | null;
   isAdmin: boolean;
+  onRefetchFunding: () => Promise<void>;
 }
 
-export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps) {
+export function FundingSection({
+  clubId,
+  funding,
+  isAdmin,
+  onRefetchFunding,
+}: FundingSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingFunding, setEditingFunding] = useState<Funding | null>(null);
 
@@ -37,22 +52,29 @@ export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps
     setModalOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!funding?.id || !isEditable) return;
 
-    deleteFunding(clubId, funding.id);
-    window.location.reload();
+    try {
+      await deleteFunding(clubId, funding.id);
+      await onRefetchFunding();
+    } catch (error) {
+      console.error('Failed to delete funding:', error);
+    }
   };
 
-  const handleSubmit = (data: Funding) => {
-    if (editingFunding) {
-      updateFundingByClubId(clubId, data);
-    } else {
-      createFunding(clubId, data);
+  const handleSubmit = async (data: Funding) => {
+    try {
+      if (editingFunding) {
+        await updateFundingByClubId(clubId, data);
+      } else {
+        await createFunding(clubId, data);
+      }
+      setModalOpen(false);
+      await onRefetchFunding();
+    } catch (error) {
+      console.error('Failed to submit funding:', error);
     }
-
-    setModalOpen(false);
-    window.location.reload();
   };
 
   return (
@@ -65,11 +87,18 @@ export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps
       </div>
       <div className="mt-2 space-y-4">
         {funding ? (
-          <div key={funding.id} className="p-4 border rounded-md bg-gray-800 flex justify-between items-start">
+          <div
+            key={funding.id}
+            className="p-4 border rounded-md bg-gray-800 flex justify-between items-start"
+          >
             <div>
               <p className="text-sm text-gray-300">Amount: ${funding.amount}</p>
-              <p className="text-sm text-gray-300">Description: {funding.description}</p>
-              <p className="text-sm text-gray-300">Applied on: {funding.createdAt}</p>
+              <p className="text-sm text-gray-300">
+                Description: {funding.description}
+              </p>
+              <p className="text-sm text-gray-300">
+                Applied on: {funding.createdAt}
+              </p>
               <p className="text-sm text-gray-300">Status: {funding.status}</p>
             </div>
             {/* Only display dropdown for admins */}
@@ -80,8 +109,12 @@ export function FundingSection({ clubId, funding, isAdmin }: FundingSectionProps
                 </DropdownButton>
                 <DropdownMenu anchor="bottom end">
                   {isEditable && <DropdownItem onClick={handleEdit}>Edit</DropdownItem>}
-                  {isEditable && <DropdownItem onClick={handleDelete}>Delete</DropdownItem>}
-                  {!isEditable && <DropdownItem disabled>Not Editable</DropdownItem>}
+                  {isEditable && (
+                    <DropdownItem onClick={handleDelete}>Delete</DropdownItem>
+                  )}
+                  {!isEditable && (
+                    <DropdownItem disabled>Not Editable</DropdownItem>
+                  )}
                 </DropdownMenu>
               </Dropdown>
             )}

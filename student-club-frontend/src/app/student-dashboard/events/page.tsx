@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, ChangeEvent } from 'react'
+import { useEffect, useState, useCallback, ChangeEvent } from 'react'
 import { Divider } from '@/components/divider'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -20,18 +20,21 @@ export default function Events() {
   const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  useEffect(() => {
-    async function fetchData() {
-      if (!token) return;
-      try {
-        const eventsData = await getAllEvents();
-        setEvents(eventsData);
-      } catch (error) {
-        console.error(error);
-      }
+  const fetchEventsData = useCallback(async () => {
+    try {
+      const eventsData = await getAllEvents();
+      setEvents(eventsData);
+    } catch (error) {
+      console.error('Failed to fetch events data:', error);
     }
-    fetchData();
-  }, [token]);
+  }, []);
+
+  useEffect(() => {
+    async function initialLoad() {
+      await fetchEventsData();
+    }
+    initialLoad();
+  }, [fetchEventsData]);
 
   const handleRsvp = (event: Event) => {
     setRsvpEvent(event);
@@ -48,7 +51,7 @@ export default function Events() {
       tickets: tickets
     }
     await createRsvp(eventId, rsvp);
-    window.location.reload();
+    await fetchEventsData();
   }
 
   const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -87,9 +90,9 @@ export default function Events() {
               <InputGroup>
                 <MagnifyingGlassIcon />
                 {/* Attach onChange handler for search input */}
-                <Input 
-                  name="search" 
-                  placeholder="Search events…" 
+                <Input
+                  name="search"
+                  placeholder="Search events…"
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />

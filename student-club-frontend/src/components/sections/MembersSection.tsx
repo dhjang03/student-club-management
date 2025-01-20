@@ -3,7 +3,12 @@
 import { useState } from 'react';
 import { Heading } from '@/components/heading';
 import { Divider } from '@/components/divider';
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { ClubMember } from '@/types/dashboard';
 import { MemberModal } from '../modals/MemberModal';
@@ -12,9 +17,15 @@ interface MembersSectionProps {
   clubId: number;
   members: ClubMember[];
   isAdmin: boolean;
+  onRefetchMembers: () => Promise<void>;
 }
 
-export function MembersSection({ clubId, members, isAdmin }: MembersSectionProps) {
+export function MembersSection({
+  clubId,
+  members,
+  isAdmin,
+  onRefetchMembers,
+}: MembersSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<ClubMember | null>(null);
 
@@ -28,7 +39,7 @@ export function MembersSection({ clubId, members, isAdmin }: MembersSectionProps
       <Heading level={2}>Club Members</Heading>
       <ul className="mt-2 space-y-2 max-h-96 overflow-y-auto">
         {members.length > 0 ? (
-          members.map(member => (
+          members.map((member) => (
             <li key={member.id}>
               <Divider />
               <div className="flex items-center justify-between py-2">
@@ -59,13 +70,17 @@ export function MembersSection({ clubId, members, isAdmin }: MembersSectionProps
           <li className="text-sm text-gray-500">No members found.</li>
         )}
       </ul>
+
       {editingMember && (
         <MemberModal
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)}
-          onSuccess={() => window.location.reload()}
           member={editingMember}
           clubId={clubId}
+          onSuccess={async () => {
+            setModalOpen(false);
+            await onRefetchMembers();
+          }}
         />
       )}
     </div>

@@ -2,10 +2,19 @@ import { useState } from 'react';
 import { Button } from '@/components/button';
 import { Heading } from '@/components/heading';
 import { Divider } from '@/components/divider';
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid';
 import { ClubEventModal } from '@/components/modals/ClubEventModal';
-import { createClubEvent, updateClubEvent, deleteClubEvent } from '@/api/dashboard';
+import {
+  createClubEvent,
+  updateClubEvent,
+  deleteClubEvent,
+} from '@/api/dashboard';
 import { Event, Venue } from '@/types/dashboard';
 
 interface ClubEventsSectionProps {
@@ -13,9 +22,18 @@ interface ClubEventsSectionProps {
   events: Event[];
   venues: Venue[];
   isAdmin: boolean;
+  onRefetchEvents: () => Promise<void>;
+  onRefetchClub: () => Promise<void>;
 }
 
-export function ClubEventsSection({ clubId, events, venues, isAdmin }: ClubEventsSectionProps) {
+export function ClubEventsSection({
+  clubId,
+  events,
+  venues,
+  isAdmin,
+  onRefetchEvents,
+  onRefetchClub,
+}: ClubEventsSectionProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -29,20 +47,30 @@ export function ClubEventsSection({ clubId, events, venues, isAdmin }: ClubEvent
     setModalOpen(true);
   };
 
-  const handleDelete = (eventId: number) => {
-    deleteClubEvent(clubId, eventId);
-    window.location.reload();
+  const handleDelete = async (eventId: number) => {
+    if (!eventId) return;
+
+    try {
+      await deleteClubEvent(clubId, eventId);
+      await onRefetchEvents();
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+    }
   };
 
-  const handleSubmit = (data: Event) => {
-    if (editingEvent) {
-      updateClubEvent(clubId, data);
-    } else {
-      createClubEvent(clubId, data);
+  const handleSubmit = async (data: Event) => {
+    try {
+      if (editingEvent) {
+        await updateClubEvent(clubId, data);
+      } else {
+        await createClubEvent(clubId, data);
+      }
+      setModalOpen(false);
+      await onRefetchEvents();
+      await onRefetchClub();
+    } catch (error) {
+      console.error('Failed to submit event:', error);
     }
-
-    setModalOpen(false);
-    window.location.reload();
   };
 
   return (
@@ -59,35 +87,29 @@ export function ClubEventsSection({ clubId, events, venues, isAdmin }: ClubEvent
             <li key={event.id}>
               {index > 0 && <Divider />}
               <div className="flex items-center justify-between py-6">
-                <div className="flex gap-6">
-                  <div className="space-y-1.5">
-                    <div className="text-lg text-gray-100">
-                      {event.title}
-                    </div>
-                    <div className="text-base text-gray-300">
-                      {event.date} at {event.venue.name}
-                    </div>
-                    <div className="text-base text-gray-300">
-                      {event.description}
-                    </div>
-                    <div className="text-base text-gray-400">
-                      Cost: ${event.cost} · Capacity: {event.capacity} · Attendees: {event.numOfAttendees}
-                    </div>
+                <div className="space-y-1.5">
+                  <div className="text-lg text-gray-100">{event.title}</div>
+                  <div className="text-base text-gray-300">
+                    {event.date} at {event.venue.name}
+                  </div>
+                  <div className="text-base text-gray-300">
+                    {event.description}
+                  </div>
+                  <div className="text-base text-gray-400">
+                    Cost: ${event.cost} · Capacity: {event.capacity} · Attendees: {event.numOfAttendees}
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  {isAdmin && (
-                    <Dropdown>
-                      <DropdownButton plain aria-label="More options">
-                        <EllipsisVerticalIcon />
-                      </DropdownButton>
-                      <DropdownMenu anchor="bottom end">
-                        <DropdownItem onClick={() => handleEdit(event)}>Edit</DropdownItem>
-                        <DropdownItem onClick={() => event.id !== null && handleDelete(event.id)}>Delete</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  )}
-                </div>
+                {isAdmin && (
+                  <Dropdown>
+                    <DropdownButton plain aria-label="More options">
+                      <EllipsisVerticalIcon />
+                    </DropdownButton>
+                    <DropdownMenu anchor="bottom end">
+                      <DropdownItem onClick={() => handleEdit(event)}>Edit</DropdownItem>
+                      <DropdownItem onClick={() => event.id !== null && handleDelete(event.id)}>Delete</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                )}
               </div>
             </li>
           ))

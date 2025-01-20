@@ -1,9 +1,22 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { getClubById, getClubEvents, getAllMembers, getClubFunding, getAllVenues } from '@/api/dashboard';
-import { Club, Event, ClubMember, Funding, Venue, Membership } from '@/types/dashboard';
+import {
+  getClubById,
+  getClubEvents,
+  getAllMembers,
+  getClubFunding,
+  getAllVenues,
+} from '@/api/dashboard';
+import {
+  Club,
+  Event,
+  ClubMember,
+  Funding,
+  Venue,
+  Membership,
+} from '@/types/dashboard';
 import { FundingSection } from '@/components/sections/FundingSection';
 import { MembersSection } from '@/components/sections/MembersSection';
 import { ClubEventsSection } from '@/components/sections/ClubEventsSection';
@@ -21,43 +34,76 @@ export default function StudentClubsPage() {
   const [funding, setFunding] = useState<Funding | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [clubData, eventsData, membersData, venuesData] = await Promise.all([
-          getClubById(clubId),
-          getClubEvents(clubId),
-          getAllMembers(clubId),
-          getAllVenues(),
-        ]);
-        setClub(clubData);
-        setEvents(eventsData);
-        setMembers(membersData);
-        setVenues(venuesData);
-      } catch (error) {
-        console.error(error);
-      }
+  const fetchClubData = useCallback(async () => {
+    try {
+      const clubData = await getClubById(clubId);
+      setClub(clubData);
+    } catch (error) {
+      console.error('Failed to fetch club data:', error);
     }
-    fetchData();
   }, [clubId]);
 
-  useEffect(() => {
-    async function fetchFunding() {
-      try {
-        const fundingData = await getClubFunding(clubId);
-        setFunding(fundingData);
-      } catch (error) {
-        console.error('Failed to fetch funding data:', error);
-        setFunding(null);
-      }
+  const fetchEventsData = useCallback(async () => {
+    try {
+      const eventsData = await getClubEvents(clubId);
+      setEvents(eventsData);
+    } catch (error) {
+      console.error('Failed to fetch events data:', error);
     }
-    fetchFunding();
   }, [clubId]);
+
+  const fetchMembersData = useCallback(async () => {
+    try {
+      const membersData = await getAllMembers(clubId);
+      setMembers(membersData);
+    } catch (error) {
+      console.error('Failed to fetch members data:', error);
+    }
+  }, [clubId]);
+
+  const fetchFundingData = useCallback(async () => {
+    try {
+      const fundingData = await getClubFunding(clubId);
+      setFunding(fundingData);
+    } catch (error) {
+      console.error('Failed to fetch funding data:', error);
+    }
+  }, [clubId]);
+
+  const fetchVenuesData = useCallback(async () => {
+    try {
+      const venuesData = await getAllVenues();
+      setVenues(venuesData);
+    } catch (error) {
+      console.error('Failed to fetch venues data:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function initialLoad() {
+      await Promise.all([
+        fetchClubData(),
+        fetchEventsData(),
+        fetchMembersData(),
+        fetchVenuesData(),
+      ]);
+      await fetchFundingData();
+    }
+
+    initialLoad();
+  }, [
+    fetchClubData,
+    fetchEventsData,
+    fetchMembersData,
+    fetchVenuesData,
+    fetchFundingData,
+  ]);
 
   const userId = getUserId(token);
-
   const isAdmin = useMemo(() => {
-    return members.some(member => member.id === userId && member.membership === Membership.ADMIN);
+    return members.some(
+      (member) => member.id === userId && member.membership === Membership.ADMIN
+    );
   }, [members, userId]);
 
   return (
@@ -75,21 +121,29 @@ export default function StudentClubsPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <FundingSection 
+        <FundingSection
           clubId={clubId}
           funding={funding}
-          isAdmin={isAdmin} />
-        <MembersSection 
+          isAdmin={isAdmin}
+          onRefetchFunding={fetchFundingData}
+        />
+
+        <MembersSection
           clubId={clubId}
           members={members}
-          isAdmin={isAdmin} />
+          isAdmin={isAdmin}
+          onRefetchMembers={fetchMembersData}
+        />
       </div>
 
-      <ClubEventsSection 
+      <ClubEventsSection
         clubId={clubId}
-        events={events} 
-        venues={venues} 
-        isAdmin={isAdmin} />
+        events={events}
+        venues={venues}
+        isAdmin={isAdmin}
+        onRefetchEvents={fetchEventsData}
+        onRefetchClub={fetchClubData}
+      />
     </>
   );
 }
