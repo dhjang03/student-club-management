@@ -117,24 +117,20 @@ export default function StaffDashboard() {
                           In Review
                         </DropdownItem>
                       )}
-                      {funding.status !== ApplicationStatus.APPROVED && (
-                        <DropdownItem
-                          onClick={() =>
-                            funding.id !== null && handleUpdateStatus(funding.id, ApplicationStatus.APPROVED)
-                          }
-                        >
-                          Approve
-                        </DropdownItem>
-                      )}
-                      {funding.status !== ApplicationStatus.REJECTED && (
-                        <DropdownItem
-                          onClick={() =>
-                            funding.id !== null && handleUpdateStatus(funding.id, ApplicationStatus.REJECTED)
-                          }
-                        >
-                          Reject
-                        </DropdownItem>
-                      )}
+                      <DropdownItem
+                        onClick={() =>
+                          funding.id !== null && handleUpdateStatus(funding.id, ApplicationStatus.APPROVED)
+                        }
+                      >
+                        Approve
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() =>
+                          funding.id !== null && handleUpdateStatus(funding.id, ApplicationStatus.REJECTED)
+                        }
+                      >
+                        Reject
+                      </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 )}
