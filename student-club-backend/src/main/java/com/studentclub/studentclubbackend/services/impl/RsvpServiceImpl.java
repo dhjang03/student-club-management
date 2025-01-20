@@ -65,6 +65,8 @@ public class RsvpServiceImpl implements RsvpService {
     @Override
     public void deleteRsvp(Long userId, Long rsvpId) {
         Rsvp rsvp = findRsvpByIdAndUserOrThrow(rsvpId, userId);
+        Event event = rsvp.getEvent();
+        event.updateAttendees(-rsvp.getTickets().size());
         rsvpRepository.delete(rsvp);
     }
 
