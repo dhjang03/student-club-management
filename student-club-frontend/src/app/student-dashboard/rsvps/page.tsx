@@ -8,6 +8,7 @@ import { EllipsisVerticalIcon, ChevronRightIcon } from '@heroicons/react/20/soli
 import { getToken } from '@/utils/auth'
 import { Rsvp } from '@/types/dashboard'
 import { getMyRsvps, deleteRsvp } from '@/api/dashboard'
+import { toast } from 'react-toastify'
 
 export default function RsvpList() {
   const token = getToken();
@@ -16,9 +17,8 @@ export default function RsvpList() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!token) return;
       try {
-        const rsvpsData = await getMyRsvps(token);
+        const rsvpsData = await getMyRsvps();
         setRsvps(rsvpsData);
       } catch (error) {
         console.error(error);
@@ -40,10 +40,10 @@ export default function RsvpList() {
   };
 
   const handleDelete = async (rsvpId: number) => {
-    if (!token) return;
     try {
-      await deleteRsvp(rsvpId, token);
+      await deleteRsvp(rsvpId);
       setRsvps(prev => prev.filter(rsvp => rsvp.id !== rsvpId));
+      toast.success('RSVP deleted successfully.');
     } catch (error) {
       console.error('Error deleting RSVP:', error);
     }

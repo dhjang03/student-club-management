@@ -10,6 +10,7 @@ import {
   DropdownItem,
 } from '@/components/dropdown';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 
 
 export default function StaffDashboard() {
@@ -32,6 +33,7 @@ export default function StaffDashboard() {
   const handleUpdateStatus = async (fundingId: number, newStatus: ApplicationStatus) => {
     try {
       const updatedFunding = await updateFundingStatus(fundingId, newStatus);
+      toast.success('Funding status updated successfully.');
       setFundings((prevFundings) =>
         prevFundings.map((f) => (f.id === fundingId ? updatedFunding : f))
       );

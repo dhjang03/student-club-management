@@ -17,6 +17,7 @@ import {
   updateFundingByClubId,
   deleteFunding,
 } from '@/api/dashboard';
+import { toast } from 'react-toastify';
 
 interface FundingSectionProps {
   clubId: number;
@@ -57,6 +58,7 @@ export function FundingSection({
 
     try {
       await deleteFunding(clubId, funding.id);
+      toast.success('Funding application deleted successfully.');
       await onRefetchFunding();
     } catch (error) {
       console.error('Failed to delete funding:', error);
@@ -67,8 +69,10 @@ export function FundingSection({
     try {
       if (editingFunding) {
         await updateFundingByClubId(clubId, data);
+        toast.success('Funding application updated successfully.');
       } else {
         await createFunding(clubId, data);
+        toast.success('Funding application created successfully.');
       }
       setModalOpen(false);
       await onRefetchFunding();

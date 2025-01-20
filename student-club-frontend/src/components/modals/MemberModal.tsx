@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/button';
 import { ClubMember } from '@/types/dashboard';
 import { promoteToAdmin, demoteToMember } from '@/api/dashboard';
+import { toast } from 'react-toastify';
 
 interface MemberModalProps {
   isOpen: boolean;
@@ -21,8 +22,10 @@ export function MemberModal({ isOpen, onClose, onSuccess, member, clubId }: Memb
   const handleSubmit = async () => {
     if (action === 'promote') {
       await promoteToAdmin(clubId, member);
+      toast.success('Member promoted to admin successfully.');
     } else {
       await demoteToMember(clubId, member);
+      toast.success('Admin demoted to member successfully.');
     }
     onSuccess();
     onClose();

@@ -16,6 +16,7 @@ import {
   deleteClubEvent,
 } from '@/api/dashboard';
 import { Event, Venue } from '@/types/dashboard';
+import { toast } from 'react-toastify';
 
 interface ClubEventsSectionProps {
   clubId: number;
@@ -52,7 +53,9 @@ export function ClubEventsSection({
 
     try {
       await deleteClubEvent(clubId, eventId);
+      toast.success('Event deleted successfully.');
       await onRefetchEvents();
+      await onRefetchClub();
     } catch (error) {
       console.error('Failed to delete event:', error);
     }
@@ -62,8 +65,10 @@ export function ClubEventsSection({
     try {
       if (editingEvent) {
         await updateClubEvent(clubId, data);
+        toast.success('Event updated successfully.');
       } else {
         await createClubEvent(clubId, data);
+        toast.success('Event created successfully.');
       }
       setModalOpen(false);
       await onRefetchEvents();

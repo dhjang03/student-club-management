@@ -7,13 +7,12 @@ import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
 import { Select } from '@/components/select'
 import { EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/16/solid'
-import { getToken } from '@/utils/auth'
 import { Event, Ticket, Rsvp } from '@/types/dashboard'
 import { getAllEvents, createRsvp } from '@/api/dashboard'
 import { RsvpModal } from '@/components/modals/RsvpModal'
+import { toast } from 'react-toastify'
 
 export default function Events() {
-  const token = getToken();
   const [events, setEvents] = useState<Event[]>([]);
   const [rsvpEvent, setRsvpEvent] = useState<Event | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -42,7 +41,6 @@ export default function Events() {
   }
 
   const handleSubmit = async (eventId: number, tickets: Ticket[]) => {
-    if (!token) return;
     const rsvp: Rsvp = {
       id: null,
       responder: null,
@@ -51,6 +49,7 @@ export default function Events() {
       tickets: tickets
     }
     await createRsvp(eventId, rsvp);
+    toast.success('Rsvp submitted successfully.');
     await fetchEventsData();
   }
 
