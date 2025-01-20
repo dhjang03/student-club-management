@@ -35,14 +35,6 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
     }
 
     @Override
-    public FundingDTO updateFundingStatus(Long fundingId, FundingStatusUpdateDTO status) {
-        FundingApplication funding = findFundingByIdOrThrow(fundingId);
-        funding.setStatus(status.getStatus());
-        fundingRepository.save(funding);
-        return fundingMapper.toFundingDTO(funding);
-    }
-
-    @Override
     public FundingDTO getFundingByClubId(Long clubId) {
         FundingApplication funding = findFundingByClubIdOrThrow(clubId);
         return fundingMapper.toFundingDTO(funding);
@@ -81,6 +73,18 @@ public class FundingApplicationServiceImpl implements FundingApplicationService 
 
         FundingApplication updatedFunding = fundingRepository.save(existingFunding);
         return fundingMapper.toFundingDTO(updatedFunding);
+    }
+
+    @Override
+    public FundingDTO updateFundingStatus(Long fundingId, FundingStatusUpdateDTO status) {
+        FundingApplication funding = findFundingByIdOrThrow(fundingId);
+
+        if (funding.getStatus() != ApplicationStatus.APPROVED && status.getStatus() == ApplicationStatus.APPROVED) {
+            funding.getClub().addFunds(funding.getAmount());
+        }
+        funding.setStatus(status.getStatus());
+        fundingRepository.save(funding);
+        return fundingMapper.toFundingDTO(funding);
     }
 
     @Override
