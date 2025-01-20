@@ -129,6 +129,7 @@ public class EventServiceImpl implements EventService {
         event.setTitle(eventDTO.getTitle());
         event.setDescription(eventDTO.getDescription());
         event.setDate(eventDTO.getDate());
+        event.setCost(eventDTO.getCost());
         event.setCapacity(eventDTO.getCapacity());
         event.setVenue(venue);
     }
