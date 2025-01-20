@@ -86,6 +86,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEvent(Long eventId) {
         Event event = findEventByIdOrThrow(eventId);
+        if (event.getDate().after(new Date())) {
+            Club club = event.getClub();
+            club.addFunds(event.getCost());
+        }
         eventRepository.delete(event);
     }
 
