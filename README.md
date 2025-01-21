@@ -11,30 +11,18 @@ The backend is implemented in Java using Spring Boot, while the frontend leverag
 ## Tech Stack
 
 ### Backend
-- **Java 23**
-  - Spring Boot 3.4.1
-    - Spring Security
-    - Spring Data JPA
-    - Spring Web
-  - Lombok for boilerplate reduction
-  - JWT (jjwt 0.12.6) for authentication
+- Java 23
+- Spring Boot 3.4.1
+- Lombok for boilerplate reduction
 
 ### Frontend
-- **Next.js 15.1.4**
-  - React 19
-  - TypeScript 5
-  - TailwindCSS 3.4.1
-  - Axios 1.7.9 for API requests
-  - JWT Decode 4.0.0
-  - React Toastify 11.0.3 for notifications
+- Next.js 15
+- React 19
+- TypeScript 5
+- TailwindCSS 3.4.1
 
 ### Database
-- PostgreSQL (version managed by Spring Boot 3.4.1)
-
-### Development Tools
-- ESLint 9
-- PostCSS 8
-- Spring Boot DevTools
+- PostgreSQL
 
 ### Infrastructure
 - Docker & Docker Compose
