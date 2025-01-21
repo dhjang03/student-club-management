@@ -1,7 +1,9 @@
 # Student Club Management
 
 ## Introduction
-This project is a Student Club and Event Management System, designed to facilitate the management of student clubs and their events at the University of Melbourne. It enables students to interact with their clubs, create and manage events, RSVP to events, and manage funding applications for their clubs. The project is re-implementation of the original project using Spring Boot.
+The project is re-implementation of the original project using Spring Boot, leveraging the power of the framework.
+
+Student Club and Event Management System is designed to facilitate the management of student clubs and their events at the University of Melbourne. It enables students to interact with their clubs, create and manage events, RSVP to events, and manage funding applications for their clubs. 
 
 ## Background
 Managing student clubs and events can be challenging without a centralized system. This application addresses this issue by providing a web-based platform where students and administrators can efficiently manage their club-related activities. Key functionalities include creating, amending, and canceling events, as well as handling RSVPs and funding applications.
@@ -26,10 +28,6 @@ The backend is implemented in Java using Spring Boot, while the frontend leverag
 
 ### Infrastructure
 - Docker & Docker Compose
-
-## Documentations
-
-- [PLACEHOLDER]
 
 ## Getting Started
 
